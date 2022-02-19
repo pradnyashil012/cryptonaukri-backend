@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const smtpTransport = require('nodemailer/lib/smtp-transport')
-var officialotp;
+var officialotp, otp2;
 
 
 
@@ -279,6 +279,33 @@ router.post('/user/authentication/forgotpassword', async(req, res) => {
 
     if (findUser) {
 
+        otp2 = getRandomInt(100000, 999999)
+
+        var mailOptions = {
+            from: ' "Verify your mail" <anshtester69@gmail.com>',
+            to: email,
+            subject: ' verification for Cryptonaukri.com',
+            html: `<h2> ! To change password </h2>
+                   <h4> Please verify your mail to continue...</h4>
+                   <h4>${otp2}</h4>`
+
+        }
+
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                console.log(error)
+
+            } else {
+                console.log('Verification email is sent to your gmail')
+
+
+            }
+        })
+
+
+        findUser.otp = otp2
+        findUser.save();
+
         res.send(findUser);
 
     } else {
@@ -294,14 +321,15 @@ router.post('/user/authentication/forgotpassword', async(req, res) => {
 
 router.post('/user/authentication/changepassword', async(req, res) => {
 
-    const { email, password } = req.body;
-    const findUser = await user_schema.findOne({ email: email })
+    const { email, password, otp } = req.body;
+    const findUser = await user_schema.findOne({ email: email, otp: otp })
 
     if (findUser) {
 
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
         findUser.password = hashPassword
+        findUser.otp = null
         await findUser.save()
 
         res.send(findUser);
