@@ -1,13 +1,10 @@
 const express = require("express")
 const path = require('path')
 require('dotenv').config()
-// const connectDB = require('./connection/connect')
 const app = express()
 const port = process.env.PORT || 3001;
 const cors = require("cors")
 const mongoose = require('mongoose')
-
-
 
 
 const login = require("./routes/backend_login")
@@ -23,21 +20,6 @@ app.use(cors())
 app.use(job)
 app.use(login)
  
-
-// if (process.env.NODE_ENV === 'production') {
-
-//     // app.use(express.static("frontend/build"))
-//     app.use(express.static(path.join(__dirname, "frontend","build")))
-
-//     app.get('*' ,(req ,res)=>{
-//         res.sendFile(path.join(__dirname ,"frontend" ,"build" ,"index.html"))
-//     })
-// }
-// else{
-//     app.get("/" ,(req ,res)=>{
-//         res.send('API is running')
-//     })
-// }
 
 app.get("/", (req, res) => {
     res.send("APIs are running!")
