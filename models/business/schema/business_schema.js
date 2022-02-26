@@ -27,7 +27,7 @@ const business_schema = mongoose.model('business_schema', {
         require: true,
     },
     gstin: {
-        type: Number,
+        type: String,
         require: false,
     },
     headquarters: {

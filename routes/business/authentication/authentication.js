@@ -55,9 +55,9 @@ router.post("/business/authentication/signup", async(req, res) => {
 
     console.log(req.body);
 
-    business_schema.findOne({ officialemail: req.body.officialemail }, async function(err, data_user) {
+    business_schema.findOne({ officialemail: req.body.email }, async function(err, data_user) {
         if (data_user) {
-            res.send("Already registered");
+            res.send({message:"Already registered", code:false});
         } else {
 
             try {
@@ -67,26 +67,27 @@ router.post("/business/authentication/signup", async(req, res) => {
 
                 const { name, officialemail, password, companyname, description, estyear, gstin, headquarters, phonenumber, websitelink } = req.body;
                 const user = new business_schema({
-                    name,
-                    officialemail,
-                    password,
-                    companyname,
-                    description,
-                    estyear,
-                    gstin,
-                    headquarters,
-                    phonenumber,
-                    websitelink,
+                    name : req.body.exec,
+                    officialemail : req.body.email,
+                    password : req.body.pass,
+                    companyname : req.body.comp,
+                    description : req.body.desc,
+                    estyear : req.body.year,
+                    gstin : req.body.gstin,
+                    headquarters : req.body.hq,
+                    phonenumber : req.body.phoneNo,
+                    websitelink : req.body.website,
                     isVerified: false,
                     otp: officialotp
 
                 })
 
 
-
+                console.log(user)
                 const salt = await bcrypt.genSalt(10)
                 const hashPassword = await bcrypt.hash(user.password, salt)
                 user.password = hashPassword
+                console.log(hashPassword)
 
                 const newUser = await user.save()
 
@@ -94,7 +95,7 @@ router.post("/business/authentication/signup", async(req, res) => {
 
                 var mailOptions = {
                     from: ' "Verify your mail" <anshtester69@gmail.com>',
-                    to: user.officialemail,
+                    to: `${user.officialemail}`,
                     subject: 'Email verification for Cryptonaukri.com',
                     html: `<h2> ${user.name}! Thanks for registering </h2>
                            <h4> Please verify your mail to continue...</h4>
@@ -102,22 +103,24 @@ router.post("/business/authentication/signup", async(req, res) => {
                 }
 
                 transporter.sendMail(mailOptions, function(error, info) {
+                    console.log(info+' this is info')
                     if (error) {
-                        console.log(error)
-
+                        console.log("this is error"+error)
+                        res.send({message:'Could not send otp, try Again !!', code:false
+                        })
                     } else {
                         console.log('Verification email is sent to your gmail')
+                        res.send({message:'Check your mail for OTP !'})
 
 
                     }
                 })
-
-
+                console.log('after all')
                 // res.send(user);
-                res.send("Successfully Registered")
+                // res.send("Successfully Registered")
 
             } catch (err) {
-                res.send('Error')
+                res.send(err)
 
             }
 
@@ -132,7 +135,7 @@ router.post('/business/authentication/verify-email', async(req, res) => {
     try {
         console.log(req.body)
         const token = req.body.otp
-        const officialemail = req.body.officialemail
+        const officialemail = req.body.email
         console.log(token)
         const user = await business_schema.findOne({ otp: token, officialemail: officialemail })
 
@@ -141,9 +144,10 @@ router.post('/business/authentication/verify-email', async(req, res) => {
             user.isVerified = true
             await user.save()
             console.log('Successfully Login')
-            res.send(user)
+            res.send({message: 'Success ! Otp verified !', code:'success'})
         } else {
             console.log('Email not verified')
+            res.send({message: 'Wrong OTP !', code:'error'})
         }
 
     } catch (err) {
@@ -156,25 +160,25 @@ router.post('/business/authentication/login', async(req, res) => {
 
 
 
-    const { officialemail, password } = req.body;
-    const findUser = await business_schema.findOne({ officialemail: officialemail })
+    const { email, password } = req.body;
+    const findUser = await business_schema.findOne({ officialemail: email })
 
     if (findUser) {
         const match = await bcrypt.compare(password, findUser.password)
 
         if (match) {
-            res.send("Successfully Login!");
+            res.send({message:"Successfully Logged In!", cUser :findUser.officialemail, login:true});
 
         } else {
             console.log("Wrong Password")
-            res.send('Wrong Password')
+            res.send({message:'Wrong Password', login:false})
 
         }
 
 
     } else {
         console.log("Email not registered")
-        res.send('Not registered!')
+        res.send({message:'Email not registered!', login:false})
     }
 
 

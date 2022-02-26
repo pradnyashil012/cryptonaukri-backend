@@ -52,13 +52,13 @@ var transporter = nodemailer.createTransport(new smtpTransport({
 
 
 
-router.post("/user/authentication/signup", async(req, res) => {
+router.post("/user/authentication/signup", async (req, res) => {
 
     console.log(req.body);
 
-    user_schema.findOne({ email: req.body.email }, async function(err, data_user) {
+    user_schema.findOne({ email: req.body.email }, async function (err, data_user) {
         if (data_user) {
-            res.send("Already registered");
+            res.send({ message: "Already registered" });
         } else {
 
             try {
@@ -69,12 +69,12 @@ router.post("/user/authentication/signup", async(req, res) => {
 
                 const { firstname, lastname, email, phonenumber, password, location } = req.body;
                 const user = new user_schema({
-                    firstname,
-                    lastname,
-                    email,
-                    phonenumber,
-                    password,
-                    location,
+                    firstname:req.body.fname,
+                    lastname:req.body.lname,
+                    email:req.body.email,
+                    phonenumber:req.body.number,
+                    password:req.body.password,
+                    location:req.body.location,
                     isVerified: false,
                     otp: officialotp
                 })
@@ -97,13 +97,15 @@ router.post("/user/authentication/signup", async(req, res) => {
 
                 }
 
-                transporter.sendMail(mailOptions, function(error, info) {
+                transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error)
+                        res.send({message:'Could not send otp, try Again !!', code:false
+                        })
 
                     } else {
                         console.log('Verification email is sent to your gmail')
-
+                        res.send({ message: 'Check your mail for OTP !', code:false })
 
                     }
                 })
@@ -111,11 +113,10 @@ router.post("/user/authentication/signup", async(req, res) => {
 
 
 
-                res.send(newUser)
+                // res.send(newUser)
 
             } catch (err) {
-                res.send('Error')
-
+                res.send({message:'Some error happened !!'})
             }
 
 
@@ -129,11 +130,11 @@ router.post("/user/authentication/signup", async(req, res) => {
 
 
 
-router.post("/admin/signup", async(req, res) => {
+router.post("/admin/signup", async (req, res) => {
 
     console.log(req.body);
 
-    admin_schema.findOne({ email: req.body.email }, async function(err, data_user) {
+    admin_schema.findOne({ email: req.body.email }, async function (err, data_user) {
         if (data_user) {
             res.send("Already registered");
         } else {
@@ -171,7 +172,7 @@ router.post("/admin/signup", async(req, res) => {
 
                 }
 
-                transporter.sendMail(mailOptions, function(error, info) {
+                transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error)
 
@@ -201,7 +202,7 @@ router.post("/admin/signup", async(req, res) => {
 
 
 
-router.post('/user/authentication/verify-email', async(req, res) => {
+router.post('/user/authentication/verify-email', async (req, res) => {
     try {
         console.log(req.body)
         const token = req.body.otp
@@ -214,10 +215,10 @@ router.post('/user/authentication/verify-email', async(req, res) => {
             user.isVerified = true
             await user.save()
             console.log('Successfully Login')
-            res.send(user)
+            res.send({message: 'Success ! Otp verified !', code:'success'})
         } else {
             console.log('Email not verified')
-            res.send("Invalid OTP")
+            res.send({message: 'Wrong OTP !', code:'error'})
         }
 
     } catch (err) {
@@ -229,7 +230,7 @@ router.post('/user/authentication/verify-email', async(req, res) => {
 
 
 
-router.post('/user/authentication/login', async(req, res) => {
+router.post('/user/authentication/login', async (req, res) => {
 
 
 
@@ -241,11 +242,11 @@ router.post('/user/authentication/login', async(req, res) => {
         const match = await bcrypt.compare(password, findUser.password)
 
         if (match) {
-            res.send("Success");
+            res.send({message:"Login Successful"});
 
         } else {
             console.log("Wrong Password")
-            res.send('Wrong Password')
+            res.send({message:"Wrong Password !"});
 
         }
 
@@ -255,11 +256,12 @@ router.post('/user/authentication/login', async(req, res) => {
         const match = await bcrypt.compare(password, findAdmin.password)
 
         if (match) {
-            res.send("Success");
+            res.send({message:"Login Successful"});
 
         } else {
             console.log("Wrong Password For Admin")
             res.send('Wrong Password For Admin')
+            res.send({message:"Wrong Password !",});
 
         }
     } else {
@@ -272,7 +274,7 @@ router.post('/user/authentication/login', async(req, res) => {
 
 
 
-router.post('/user/authentication/forgotpassword', async(req, res) => {
+router.post('/user/authentication/forgotpassword', async (req, res) => {
 
     const { email } = req.body;
     const findUser = await user_schema.findOne({ email: email })
@@ -291,7 +293,7 @@ router.post('/user/authentication/forgotpassword', async(req, res) => {
 
         }
 
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 console.log(error)
 
@@ -319,7 +321,7 @@ router.post('/user/authentication/forgotpassword', async(req, res) => {
 
 
 
-router.post('/user/authentication/changepassword', async(req, res) => {
+router.post('/user/authentication/changepassword', async (req, res) => {
 
     const { email, password, otp } = req.body;
     const findUser = await user_schema.findOne({ email: email, otp: otp })
