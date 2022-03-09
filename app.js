@@ -1,11 +1,13 @@
 const express = require("express")
-const path = require('path')
-require('dotenv').config()
 const app = express()
-const port = process.env.PORT || 3001;
-const cors = require("cors")
-const mongoose = require('mongoose')
+const dotenv = require("dotenv");
+dotenv.config({
+    path : "./configuration/config.env"
+});
+const cors = require("cors");
+const database = require("./configuration/databaseConfig");
 
+//Routes
 const admin_business = require("./routes/admin/business/business")
 const admin_internships = require("./routes/admin/internships/internships")
 const admin_jobs = require("./routes/admin/jobs/jobs")
@@ -21,12 +23,12 @@ const user_jobs = require("./routes/user/jobs/jobs")
 const user_resume = require("./routes/user/resume/resume")
 
 
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-app.use(cors())
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 
-
+//using Routes
 app.use(admin_business)
 app.use(admin_internships)
 app.use(admin_jobs)
@@ -40,36 +42,14 @@ app.use(user_jobs)
 app.use(user_resume)
 
 
-app.get("/", (req, res) => {
-    res.send("APIs are running!")
-})
-
-const start = async() => {
-    try {
-        await mongoose.connect("mongodb+srv://cryptoNaukri:CN2022@cryptonaukri.psxhi.mongodb.net/cryptoNaukriDb", {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        app.listen(port)
-        console.log('listining on port');
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-start();
 
 
-
-// mongoose.connect(process.env.DATABASE);
-
-// mongoose.connection.once('open', function() {
-//     console.log('Connection made !');
-// }).on('error', function(error) {
-//     console.log(error);
-// })
+database()
+    .then(()=>console.log("Connected To Database"))
+    .catch(()=>console.log("Connection To Database Failed"));
 
 
-// app.listen(port, () => {
-//     console.log(`server running at ${port}`);
-// })
+const PORT = process.env.PORT || 8000;
+app.listen(PORT , ()=> console.log(`CryptoNaukri Server Started At PORT ${PORT}`));
+
+
