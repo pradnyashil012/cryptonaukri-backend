@@ -1,18 +1,10 @@
 # Cryptonaukri Backend 
 
-#### Todo List
-- Make Controller Methods and separate controller methods from routes.
-- Improve schema
-- giving proper end point url to routes.
-- remove a hell lot of redundancy.
-- to use middleware for role based authentication.
-- ... many more.
-
-
 ## End Points : 
-**- /api/v1/user/signup :** To add user to database.
-**- /api/v1/user/login :** To login
-**- /api/v1/user/otp?email=youremail :** To get OTP at particular email address
+**- /api/v1/user/signup :** To add user to database.   
+**- /api/v1/user/login :** To login   
+**- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
+
 
 
 ## Responses :
@@ -144,3 +136,12 @@ firstName: {
     emailAssociated : String
 }
 ```
+
+#### Todo List
+- Make Controller Methods and separate controller methods from routes.
+- Improve schema
+- giving proper end point url to routes.
+- remove a hell lot of redundancy.
+- to use middleware for role based authentication.
+- ... many more.
+
