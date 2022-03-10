@@ -1,5 +1,5 @@
 # Cryptonaukri Backend 
-
+Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 ## End Points : 
 **- /api/v1/user/signup :** To add user to database.   
 **- /api/v1/user/login :** To login   
