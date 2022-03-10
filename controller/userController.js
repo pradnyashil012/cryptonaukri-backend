@@ -32,6 +32,7 @@ exports.sendOTP = async (req,res)=>{
         await otpDatabase.create(otpData);
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
+                console.log(err);
                 return res.status(400).json({
                     code : "OTP_FAILED",
                     otpSent : false,
