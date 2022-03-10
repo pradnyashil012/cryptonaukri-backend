@@ -5,7 +5,9 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
 
-
+### Todo List :
+- Adding Endpoint for Updating Password , Forget Password thingy.
+- Adding Endpoint for Forget Password thing.
 
 ## Responses :
 #### - OTP :
@@ -137,7 +139,7 @@ firstName: {
 }
 ```
 
-#### Todo List
+#### Fixes
 - Make Controller Methods and separate controller methods from routes.
 - Improve schema
 - giving proper end point url to routes.
