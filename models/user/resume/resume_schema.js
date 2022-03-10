@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const resume_schema = mongoose.model('resume_schema', {
 
