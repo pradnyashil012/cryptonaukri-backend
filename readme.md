@@ -4,10 +4,14 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/signup :** To add user to database.   
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
+**- /api/v1/user/changePassword :** To change the current password.
+**- /api/v1/user/forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
+**- /api/v1/user/forgetPassword :** To change Password 
 
 ### Todo List :
-- Adding Endpoint for Updating Password , Forget Password thingy.
-- Adding Endpoint for Forget Password thing.
+- ~~Adding Endpoint for Updating Password.~~
+- ~~Adding Endpoint for Forget Password thing.~~
+- Going through MVP list (for now)
 
 ## Responses :
 #### - OTP :
@@ -90,6 +94,37 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
         });
 ```
 
+### - Change Password : 
+- If Password Change is successful 
+```
+res.status(200).json({
+            changedPassword : true ,
+            code : "CHANGED_PASSWORD",
+            message  : "changed the current password"
+        });
+```
+- If Previous Password Doesn't match current Password
+```
+res.status(400).json({
+            changedPassword : false ,
+            code : "WRONG_PASSWORD",
+            message  : "entered previous password is wrong"
+        });
+```
+- If there is any error while changing password  
+```
+res.status(200).json({
+            changedPassword : false ,
+            code : "ERROR",
+            message  : "An error occurred while updating the password"
+        });
+```
+
+
+### - Forget Password : 
+- Responses For conditions like password change is successful etc will be similar to that of previous responses.
+
+
 ## Schemas :
 - User (Subject to change after addition of Internship and Job Posting stuff.)
 ```
@@ -128,14 +163,19 @@ firstName: {
     }
 ```
 
-- OTP (Not required for Frontend)
+- Forget Password
 ```
 {
-    otp : {
-        type : Number,
-        required : true
-    },
-    emailAssociated : String
+    "email":"email@gmail.com",
+    "newPassword":"password",
+    "otp":3734
+}
+```
+- Change Password (remember to pass in JWT)
+```
+{
+    "previousPassword":"password",
+    "newPassword":"postman"
 }
 ```
 
