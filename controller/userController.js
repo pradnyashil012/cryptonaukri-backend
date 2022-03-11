@@ -204,7 +204,7 @@ exports.forgetPasswordOTP = async (req,res)=>{
         const mailOptions = {
             from: process.env.EMAIL,
             to: req.query.email,
-            subject: 'Changing Password for Cryptonaukri.com',
+            subject: 'OTP To Change Password for Cryptonaukri.com',
             html: `
                <h4>OTP To Change Your Password</h4>
                <h4>You Have 10 mins to validate this OTP</h4>
@@ -240,7 +240,23 @@ exports.forgetPassword = async (req,res)=>{
     redisClient.get(req.body.email)
         .then(async (data) =>{
             if(Number(data)===req.body.otp){
-
+                const user = await userDatabase.findOne({email : req.body.email});
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(req.body.newPassword, salt);
+                try {
+                    await userDatabase.updateOne({email : req.body.email} ,user);
+                    return res.status(200).json({
+                        changedPassword : true ,
+                        code : "CHANGED_PASSWORD",
+                        message  : "changed the current password"
+                    });
+                }catch (e) {
+                    return res.status(400).json({
+                        changedPassword : false ,
+                        code : "ERROR",
+                        message  : "An error occurred while changing the password"
+                    });
+                }
             }else{
                 return res.status(400).json({
                     code : "WRONG_OTP",
@@ -250,7 +266,12 @@ exports.forgetPassword = async (req,res)=>{
             }
         })
         .catch(error =>{
-
+            console.log(error);
+            return res.status(400).json({
+                changedPassword : false ,
+                code : "ERROR",
+                message  : "An error occurred while comparing retrieving the otp to change the password"
+            });
         });
 }
 
