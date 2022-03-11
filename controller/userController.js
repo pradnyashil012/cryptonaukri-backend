@@ -1,5 +1,4 @@
 const userDatabase = require("../models/user/userSchema");
-const otpDatabase = require("../models/otpModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
