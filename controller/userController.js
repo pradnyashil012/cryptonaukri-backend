@@ -121,7 +121,7 @@ exports.userLogin = async (req,res)=>{
         return res.status(404).json({
             userLoggedIn : false ,
             code : "NOT_FOUND" ,
-            message : "user with such username does not exist"
+            message : "user with such email does not exist"
         });
     }
     const validatePassword = await bcrypt.compare(req.body.password , user.password);
@@ -146,4 +146,111 @@ exports.userLogin = async (req,res)=>{
     });
 }
 
+exports.changePassword = async (req,res)=>{
+    const previousPassword = await bcrypt.compare(req.body.previousPassword , req.user.password);
+    if(!previousPassword){
+        return res.status(400).json({
+            changedPassword : false ,
+            code : "WRONG_PASSWORD",
+            message  : "entered previous password is wrong"
+        });
+    }
+    const salt = await bcrypt.genSalt(10);
+    req.user.password = await bcrypt.hash(req.body.newPassword , salt);
+
+    try {
+        await userDatabase.findByIdAndUpdate(req.user._id , req.user);
+        return res.status(200).json({
+            changedPassword : true ,
+            code : "CHANGED_PASSWORD",
+            message  : "changed the current password"
+        });
+    }catch (e) {
+        return res.status(200).json({
+            changedPassword : false ,
+            code : "ERROR",
+            message  : "An error occurred while updating the password"
+        });
+    }
+}
+
+exports.forgetPasswordOTP = async (req,res)=>{
+    const user = await userDatabase.findOne({email : req.query.email});
+    if(user){
+        const transporter = nodemailer.createTransport({
+            service:"gmail",
+            auth : {
+                user : process.env.EMAIL,
+                pass: process.env.PASSWORD
+            }
+        });
+        let otp = 0;
+        await redisClient.get(req.query.email)
+            .then(async (data)=>{
+                if(data){
+                    otp = Number(data);
+                }else{
+                    otp = Math.floor(1000 + Math.random() * 9000);
+                    await redisClient.set(req.query.email,otp , "EX" , 600);
+                }
+            })
+            .catch(async (error)=>{
+                // need to return some data from here  for now Just logging the error
+                console.log(error);
+                otp = Math.floor(1000 + Math.random() * 9000);
+                await redisClient.set(req.query.email,otp , "EX" , 600);
+            });
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: req.query.email,
+            subject: 'Changing Password for Cryptonaukri.com',
+            html: `
+               <h4>OTP To Change Your Password</h4>
+               <h4>You Have 10 mins to validate this OTP</h4>
+               <h4>${otp}</h4>
+            `
+        }
+        transporter.sendMail(mailOptions,(err,data)=>{
+            if(err){
+                return res.status(400).json({
+                    code : "OTP_FAILED",
+                    otpSent : false,
+                    message : "Failed To send OTP"
+                });
+            }else{
+                return res.status(200).json({
+                    code : "OTP_SENT",
+                    otpSent : true,
+                    message : "OTP sent"
+                });
+            }
+        });
+
+    }else{
+        return res.status(404).json({
+            userLoggedIn : false ,
+            code : "NOT_FOUND" ,
+            message : "user with such email does not exist"
+        });
+    }
+}
+
+exports.forgetPassword = async (req,res)=>{
+    redisClient.get(req.body.email)
+        .then(async (data) =>{
+            if(Number(data)===req.body.otp){
+
+            }else{
+                return res.status(400).json({
+                    code : "WRONG_OTP",
+                    userAdded : false,
+                    message : "Wrong OTP"
+                });
+            }
+        })
+        .catch(error =>{
+
+        });
+}
 
