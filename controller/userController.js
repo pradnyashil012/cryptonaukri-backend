@@ -3,6 +3,9 @@ const otpDatabase = require("../models/otpModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const Redis = require("ioredis");
+const redisClient = new Redis(process.env.REDIS);
+
 
 exports.sendOTP = async (req,res)=>{
     const userPresenceCheck = await userDatabase.findOne({email : req.query.email});
@@ -14,7 +17,21 @@ exports.sendOTP = async (req,res)=>{
                 pass: process.env.PASSWORD
             }
         });
-        const otp = Math.floor(Math.random()*10000);
+        let otp = 0;
+        await redisClient.get(req.query.email)
+            .then(async (data)=>{
+                if(data){
+                    otp = Number(data);
+                }else{
+                    otp = Math.floor(1000 + Math.random() * 9000);
+                    await redisClient.set(req.query.email,otp , "EX" , 600);
+                }
+            })
+            .catch(async (error)=>{
+                otp = Math.floor(1000 + Math.random() * 9000);
+                await redisClient.set(req.query.email,otp , "EX" , 600);
+            });
+
         const mailOptions = {
             from: process.env.EMAIL,
             to: req.query.email,
@@ -22,14 +39,11 @@ exports.sendOTP = async (req,res)=>{
             html: `
                <h2>Thanks for registering </h2>
                <h4> Please verify your mail to continue...</h4>
+               <h4>You Have 10 mins to validate this OTP</h4>
                <h4>${otp}</h4>
             `
         }
-        const otpData = {
-            otp,
-            emailAssociated : req.query.email
-        }
-        await otpDatabase.create(otpData);
+
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
                 return res.status(400).json({
@@ -56,41 +70,50 @@ exports.sendOTP = async (req,res)=>{
 
 
 exports.userSignup = async (req,res)=>{
-    const getOTP = await otpDatabase.findOne({email : req.body.email});
-    if(getOTP.otp === req.body.otp){
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password , salt );
-        const userDataToBeSaved = {
-            firstName : req.body.firstName,
-            lastName : req.body.lastName,
-            email : req.body.email,
-            password : hashedPassword,
-            location : req.body.location,
-            phoneNumber : req.body.phoneNumber
-        };
-        try{
-            await userDatabase.create(userDataToBeSaved);
-            res.status(201).json({
-                code : "USER_ADDED",
-                userAdded : true,
-                message : "user has been added successfully"
-            });
-            await otpDatabase.deleteOne({email:req.body.email});
-        }catch (error) {
-            // Need to make this error more specific.
-            res.status(400).json({
-                code : "DUPLICATE",
+    redisClient.get(req.body.email)
+        .then( async (data)=> {
+            if( Number(data) === req.body.otp){
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(req.body.password , salt );
+                const userDataToBeSaved = {
+                    firstName : req.body.firstName,
+                    lastName : req.body.lastName,
+                    email : req.body.email,
+                    password : hashedPassword,
+                    location : req.body.location,
+                    phoneNumber : req.body.phoneNumber
+                };
+                try{
+                    await userDatabase.create(userDataToBeSaved);
+                    res.status(201).json({
+                        code : "USER_ADDED",
+                        userAdded : true,
+                        message : "user has been added successfully"
+                    });
+                }catch (error) {
+                    // Need to make this error more specific.
+                    return res.status(400).json({
+                        code : "DUPLICATE",
+                        userAdded : false,
+                        message : "Email ID already exists"
+                    });
+                }
+            }else{
+                return res.status(400).json({
+                    code : "WRONG_OTP",
+                    userAdded : false,
+                    message : "Wrong OTP"
+                });
+            }
+        })
+        .catch(error =>{
+            console.log(error);
+            return res.status(400).json({
+                code : "OTP_RETRIEVAL",
                 userAdded : false,
-                message : "Email ID already exists"
+                message : "some error occurred while retrieving the OTP"
             });
-        }
-    }else{
-         res.status(400).json({
-            code : "WRONG_OTP",
-            userAdded : false,
-            message : "Wrong OTP"
         });
-    }
 }
 
 exports.userLogin = async (req,res)=>{
