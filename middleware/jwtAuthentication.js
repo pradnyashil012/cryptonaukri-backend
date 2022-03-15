@@ -17,7 +17,7 @@ exports.verifyJWT = async (req,res,next)=>{
     }
     try{
         req.user = await userDatabase.findById(jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY).userID);
-        if(req.user.accountDisableDate < Date.now()  || user.isDisabled){
+        if(req.user.accountDisableDate < Date.now()  ||  req.user.isDisabled){
             req.user.isDisabled = true;
             await userDatabase.findByIdAndUpdate(req.user._id , req.user);
             return res.status(400).json({
@@ -27,6 +27,7 @@ exports.verifyJWT = async (req,res,next)=>{
         }
         next();
     }catch (e) {
+        console.log(e);
         return res.status(401).json({
             code : "INVALID_TOKEN",
             message : "Passed in JWT is invalid"

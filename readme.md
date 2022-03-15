@@ -7,14 +7,17 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/changePassword :** To change the current password.
 **- /api/v1/user/forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
 **- /api/v1/user/forgetPassword :** To change Password 
+**- /api/v1/user/userDetails?email=emailOfUser :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
+- /api/v1/user/loggedInUserDetails : To get details of logged in user  (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 
-### Todo List :
+### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
 - ~~Adding Endpoint for Forget Password thing.~~
-- Implementing coupon code part.
+- ~~Implementing coupon code part.~~
+- ~~endpoint for user details~~
 - Going through MVP list (for now)
 - getting credentials for the place where main backend is hosted rn
-- asking sir to make an account of redis cloud.
+- ~~asking sir to make an account of redis cloud.~~
 
 ## Responses :
 #### - OTP :
