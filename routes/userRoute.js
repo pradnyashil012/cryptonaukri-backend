@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const {userSignup , userLogin, sendOTP, changePassword , forgetPasswordOTP ,forgetPassword} = require("../controller/userController");
+const {userSignup , userLogin, sendOTP, changePassword , forgetPasswordOTP ,forgetPassword, userDetails,
+    loggedInUserDetails
+} = require("../controller/userController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 
 router.route("/signup")
@@ -17,9 +19,16 @@ router.route("/forgetPassword")
     .post(forgetPassword);
 router.route("/changePassword")
     .post(verifyJWT,changePassword);
+router.route("/userDetails")
+    .get(userDetails);
+router.route("/loggedInUserDetails")
+    .get(verifyJWT,loggedInUserDetails);
 
 //Test Route
 router.route("/test")
-    .get(verifyJWT , async (req, res) => {return res.json(req.user)});
+    .get(verifyJWT , async (req, res) => {
+
+        return res.json(req.user);
+    });
 
 module.exports = router;
