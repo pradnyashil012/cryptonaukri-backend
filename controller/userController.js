@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
+const couponDatabase = require("../models/couponModel");
+const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -72,8 +74,18 @@ exports.userSignup = async (req,res)=>{
     redisClient.get(req.body.email)
         .then( async (data)=> {
             if( Number(data) === req.body.otp){
+                if(req.query.coupon){
+                    const couponData = await couponDatabase.findOne({ couponCode : req.query.coupon });
+                    if(couponData.referredUserEmail.length < 5){
+                        const userAssociatedWithCoupon = await userDatabase.findOne({email : couponData.userAssociated});
+                        userAssociatedWithCoupon.accountDisableDate = new Date(userAssociatedWithCoupon.accountDisableDate.setDate(userAssociatedWithCoupon.accountDisableDate.getDate() + 7));
+                        await userDatabase.findByIdAndUpdate(userAssociatedWithCoupon._id,userAssociatedWithCoupon);
+                        couponData.referredUserEmail.push(req.body.email);
+                        await couponDatabase.findByIdAndUpdate(couponData._id,couponData);
+                    }
+                }
                 const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(req.body.password , salt );
+                const hashedPassword = await bcrypt.hash(req.body.password , salt);
                 const userDataToBeSaved = {
                     firstName : req.body.firstName,
                     lastName : req.body.lastName,
@@ -82,9 +94,18 @@ exports.userSignup = async (req,res)=>{
                     location : req.body.location,
                     phoneNumber : req.body.phoneNumber
                 };
+                /*
+                initial thought was to return data code from func and put func below into a while loop with await.
+                let couponCode = null;
+                while(couponCode != null){
+                    couponCode = await keyGenAndStoreFunc(req.body.email);
+                }
+                But for now we are asynchronously calling the keyGenAndStoreFunc(req.body.email);
+                 */
+                userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
                     await userDatabase.create(userDataToBeSaved);
-                    res.status(201).json({
+                    return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
                         message : "user has been added successfully"
@@ -130,6 +151,13 @@ exports.userLogin = async (req,res)=>{
             userLoggedIn : false ,
             code : "WRONG_PASSWORD",
             message : "user's entered password was wrong"
+        });
+    }
+    if(user.accountDisableDate < Date.now()){
+        return res.status(400).json({
+            code : "INVALID",
+            userLoggedIn : false,
+            message : "Account has been disabled(free trial period expired)"
         });
     }
     const token = await jwt.sign({
