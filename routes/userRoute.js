@@ -15,7 +15,6 @@ router.route("/forgetPasswordOTP")
     .get(forgetPasswordOTP);
 router.route("/forgetPassword")
     .post(forgetPassword);
-
 router.route("/changePassword")
     .post(verifyJWT,changePassword);
 
