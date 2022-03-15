@@ -303,3 +303,29 @@ exports.forgetPassword = async (req,res)=>{
         });
 }
 
+exports.userDetails = async (req,res)=>{
+    const user = await userDatabase.findOne({email:req.query.email});
+    if(user){
+        const {firstName , lastName , email , phoneNumber , location } = user;
+        return res.status(200).json({
+            userFound : true ,
+            details : {
+                firstName, lastName, email , phoneNumber , location
+            }
+        });
+    }else{
+        return res.status(400).json({
+            userFound : false ,
+            details : null ,
+            message : "No user is associated with this email ID"
+        });
+    }
+}
+exports.loggedInUserDetails = async (req,res)=>{
+    // it's response will include more things in the future.
+    return res.status(200).json(req.user);
+}
+
+
+
+
