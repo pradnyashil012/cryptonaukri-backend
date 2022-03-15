@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    isVerified: {
+    isDisabled: {
         type: Boolean,
         default : false
     },
@@ -37,6 +37,13 @@ const userSchema = new mongoose.Schema({
     ROLE : {
         type : String,
         default : "USER"
+    },
+    accountDisableDate : {
+      type : Date ,
+      default : Date.now() + 7 * 24 * 60 * 60 * 1000
+    },
+    couponCode : {
+        type : String
     }
 });
 
