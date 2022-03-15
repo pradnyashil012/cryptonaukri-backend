@@ -1,7 +1,7 @@
 # Cryptonaukri Backend 
 Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 ## End Points : 
-**- /api/v1/user/signup :** To add user to database.   
+**- /api/v1/user/signup?coupon=someCoupon :** To add user to database.   
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
 **- /api/v1/user/changePassword :** To change the current password.
@@ -11,7 +11,10 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 ### Todo List :
 - ~~Adding Endpoint for Updating Password.~~
 - ~~Adding Endpoint for Forget Password thing.~~
+- Implementing coupon code part.
 - Going through MVP list (for now)
+- getting credentials for the place where main backend is hosted rn
+- asking sir to make an account of redis cloud.
 
 ## Responses :
 #### - OTP :
