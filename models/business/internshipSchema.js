@@ -9,7 +9,7 @@ const internships_schema = mongoose.model('internships_schema', {
         type: String,
         require: true,
     },
-    locationtype: {
+    locationType: {
         type: String,
         require: true,
     },
@@ -22,7 +22,7 @@ const internships_schema = mongoose.model('internships_schema', {
         type: Number,
         require: true,
     },
-    startdate: {
+    startDate: {
         type: String,
         require: true,
     },
@@ -37,11 +37,11 @@ const internships_schema = mongoose.model('internships_schema', {
 
     // Stipend
 
-    amounttype: {
+    amountType: {
         type: String,
         require: true,
     },
-    currencytype: {
+    currencyType: {
         type: String,
         require: true,
 
@@ -57,15 +57,15 @@ const internships_schema = mongoose.model('internships_schema', {
         type: String,
         require: true,
     },
-    letterofrecommendation: {
+    letterOfRecommendation: {
         type: String,
         require: true,
     },
-    workhours: {
+    workHours: {
         type: String,
         require: true,
     },
-    dresscode: {
+    dressCode: {
         type: String,
         require: true,
     },

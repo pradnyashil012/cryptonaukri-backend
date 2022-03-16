@@ -1,17 +1,27 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const job_schema = mongoose.model('job_schema', {
-
-    user_id: {
-        type: String,
-
+const Schema = new mongoose.Schema({
+    usersApplied: [{
+        type : mongoose.Schema.Types.ObjectId ,
+        ref : "userAnswers"
+    }],
+    postedBy : {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "business"
     },
-
-    title: {
+    postedOn : {
+        type : Date ,
+        default:  Date.now()
+    },
+    isActive : {
+      type : Boolean ,
+      default : true
+    },
+    jobTitle: {
         type: String,
         require: true,
     },
-    locationtype: {
+    locationType: {
         type: String,
         require: true,
     },
@@ -24,14 +34,13 @@ const job_schema = mongoose.model('job_schema', {
         require: true,
     },
     openings: {
-        type: String,
-        require: false,
+        type: Number,
     },
-    experince: {
-        type: String,
+    experience: {
+        type: Number,
         require: true,
     },
-    description: {
+    jobDescription: {
         type: String,
         require: true,
     },
@@ -39,11 +48,11 @@ const job_schema = mongoose.model('job_schema', {
         type: String,
         require: true,
     },
-    fixedpay: {
+    fixedPay: {
         type: String,
         require: true,
     },
-    variablepay: {
+    variablePay: {
         type: String,
         require: true,
     },
@@ -51,35 +60,34 @@ const job_schema = mongoose.model('job_schema', {
         type: String,
         require: true,
     },
-    probationperiod: {
+    probationPeriod: {
         type: String,
         require: true,
     },
-    probationduration: {
+    probationDuration: {
         type: String,
         require: true,
     },
-    probationsalary: {
+    probationSalary: {
         type: String,
         require: true,
     },
-    perks: {
-        type: String,
-        require: true,
-    },
-    fivedaysweek: {
-        type: String,
+    perks: [{
+        type : String
+    }],
+    fiveDaysWeek: {
+        type: Boolean,
         require: true,
     },
     transportation: {
         type: String,
         require: true,
     },
-    informaldress: {
+    informalDress: {
         type: String,
         require: true,
     },
-    healthinsurance: {
+    healthInsurance: {
         type: String,
         require: true,
     },
@@ -91,14 +99,11 @@ const job_schema = mongoose.model('job_schema', {
         type: [String],
         require: true,
     },
-    candidatepreferences: {
+    candidatePreferences: {
         type: String,
         require: true,
     },
-    whyhire: {
-        type: String,
-        require: true,
-    },
+
     question: {
         type: String,
         require: true,
@@ -107,15 +112,9 @@ const job_schema = mongoose.model('job_schema', {
         type: String,
         require: true,
     },
+});
 
-
-
-
-
-})
-
-module.exports = job_schema
-
+module.exports = mongoose.model("jobSchema",Schema);
 /*
  "title": "fo",
  "locationtype": "fo",
@@ -145,8 +144,5 @@ module.exports = job_schema
 
  "question": "fo",
  "status": "fo",
-
-
-
 
 */
