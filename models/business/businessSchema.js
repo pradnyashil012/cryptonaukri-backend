@@ -21,12 +21,13 @@ const Schema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    estYear: {
+    establishedYear: {
         type: String,
         require: true,
     },
     GSTIN: {
         type: String,
+        default : null
     },
     headquarters: {
         type: String,
