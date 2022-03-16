@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userDatabase = require("../models/user/userSchema");
+const businessDatabase = require("../models/business/businessSchema");
 
 exports.verifyJWT = async (req,res,next)=>{
     const token = req.header("Authorization");
@@ -16,16 +17,22 @@ exports.verifyJWT = async (req,res,next)=>{
         });
     }
     try{
-        req.user = await userDatabase.findById(jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY).userID);
-        if(req.user.accountDisableDate < Date.now()  ||  req.user.isDisabled){
-            req.user.isDisabled = true;
-            await userDatabase.findByIdAndUpdate(req.user._id , req.user);
-            return res.status(400).json({
-                code : "INVALID",
-                message : "Account has been disabled(free trial period expired)"
-            });
+        const jwtVerify = jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY);
+        if(jwtVerify.userID){
+            req.user = await userDatabase.findById(jwtVerify.userID);
+            if(req.user.accountDisableDate < Date.now()  ||  req.user.isDisabled){
+                req.user.isDisabled = true;
+                await userDatabase.findByIdAndUpdate(req.user._id , req.user);
+                return res.status(400).json({
+                    code : "INVALID",
+                    message : "Account has been disabled(free trial period expired)"
+                });
+            }
+            next();
+        }else if(jwtVerify.businessID){
+            req.user = await businessDatabase.findById(jwtVerify.businessID);
+            next();
         }
-        next();
     }catch (e) {
         console.log(e);
         return res.status(401).json({
