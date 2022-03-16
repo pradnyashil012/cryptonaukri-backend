@@ -29,8 +29,12 @@ exports.sendOTP = async (req,res)=>{
                 }
             })
             .catch(async (error)=>{
-                otp = Math.floor(1000 + Math.random() * 9000);
-                await redisClient.set(req.query.email,otp , "EX" , 600);
+                console.log(error);
+                return res.status(400).json({
+                    code : "OTP_FAILED",
+                    otpSent : false,
+                    message : "Failed To set OTP"
+                });
             });
 
         const mailOptions = {
