@@ -44,15 +44,12 @@ const userSchema = new mongoose.Schema({
     },
     couponCode : {
         type : String
-    }
+    },
+
 });
 
 module.exports = mongoose.model("user",userSchema);
 /*
-
-otp: {
-    type: String,
-},
 job_id: {
     type: [String]
 },
