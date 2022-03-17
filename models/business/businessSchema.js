@@ -7,6 +7,7 @@ const Schema = new mongoose.Schema({
     },
     officialEmail: {
         type: String,
+        unique : true,
         require: true,
     },
     password: {
@@ -40,6 +41,10 @@ const Schema = new mongoose.Schema({
     websiteLink: {
         type: String,
     },
+    ROLE : {
+        type : String ,
+        default : "BUSINESS"
+    }
 });
 
 module.exports = mongoose.model("business",Schema);
