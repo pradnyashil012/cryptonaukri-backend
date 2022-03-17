@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
+const jobsDatabase = require("../models/business/jobSchema");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -283,11 +284,12 @@ exports.forgetPassword = async (req,res)=>{
 exports.businessDetails = async (req,res)=>{
     const business = await businessDatabase.findOne({email : req.query.email});
     if(business){
+        const jobsAdded = await jobsDatabase.find({postedBy: business._id});
         const {executiveName , officialEmail , companyName , description , establishedYear
             , headquarters , websiteLink } = business;
         return res.status(200).json({
             userFound : true ,
-            details : {executiveName,officialEmail,companyName,description,establishedYear,headquarters,websiteLink}
+            details : {executiveName,officialEmail,companyName,description,establishedYear,headquarters,websiteLink , jobsAdded }
         });
     }else{
         return res.status(400).json({
@@ -299,8 +301,13 @@ exports.businessDetails = async (req,res)=>{
 }
 
 exports.loggedInBusinessDetails = async (req,res)=> {
-    // it's response will include more things in the future.
-    return res.status(200).json(req.user);
+    //adding safety check so that user cannot access this endpoint
+    const jobsAdded = await jobsDatabase.find({postedBy: req.user._id});
+    const {executiveName , officialEmail , companyName , description , establishedYear
+        , headquarters , websiteLink , password , GSTIN} = req.user;
+
+    return res.status(200).json({executiveName , officialEmail , companyName , description , establishedYear
+        , headquarters , websiteLink , password, GSTIN , jobsAdded  });
 }
 
 
