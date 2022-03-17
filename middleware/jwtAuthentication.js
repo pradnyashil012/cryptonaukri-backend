@@ -18,6 +18,7 @@ exports.verifyJWT = async (req,res,next)=>{
     }
     try{
         const jwtVerify = jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY);
+        // const endPointAccessed = req.url.split("/")[2];
         if(jwtVerify.userID){
             req.user = await userDatabase.findById(jwtVerify.userID);
             if(req.user.accountDisableDate < Date.now()  ||  req.user.isDisabled){

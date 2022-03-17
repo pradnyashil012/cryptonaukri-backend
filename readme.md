@@ -1,6 +1,7 @@
 # Cryptonaukri Backend 
 Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 ## End Points : 
+#### User Routes
 **- /api/v1/user/signup?coupon=someCoupon :** To add user to database.   
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
@@ -8,16 +9,37 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
 **- /api/v1/user/forgetPassword :** To change Password 
 **- /api/v1/user/userDetails?email=emailOfUser :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
-- /api/v1/user/loggedInUserDetails : To get details of logged in user  (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
+**- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
+
+#### Business Routes [/api/v1/business]
+**- /signup?coupon=someCoupon :** To add user to database.   
+**- /login :** To login   
+**- /otp?email=youremail :** To get OTP at particular email address   
+**- /changePassword :** To change the current password.
+**- /forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
+**- /forgetPassword :** To change Password
+**- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
+**- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
+
+#### Jobs 
+- /postJob = To Post A Job
+- /findJob = To Find Job (different queries to be added)
+- /applyJob = To Apply for a job
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
 - ~~Adding Endpoint for Forget Password thing.~~
 - ~~Implementing coupon code part.~~
 - ~~endpoint for user details~~
-- Going through MVP list (for now)
-- getting credentials for the place where main backend is hosted rn
+- ~~Going through MVP list (for now)~~
+- ~~getting credentials for the place where main backend is hosted rn~~
 - ~~asking sir to make an account of redis cloud.~~
+- ~~adding end point for business accounts~~
+- ~~adding different kind of end points for jobs~~
+- adding endpoints for internship 
+- making an endpoint for user to update his/her resume 
+- asking which parameters will we be using to retrieve different kind of jobs
+- line 40 : jobsController
 
 ## Responses :
 #### - OTP :
