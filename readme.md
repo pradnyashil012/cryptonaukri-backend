@@ -18,8 +18,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /changePassword :** To change the current password.
 **- /forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
 **- /forgetPassword :** To change Password
-**- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
-**- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
+**- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]   
+**- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]   
 
 #### Jobs 
 - /postJob = To Post A Job
