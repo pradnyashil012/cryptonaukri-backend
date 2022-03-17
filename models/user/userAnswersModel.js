@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const Schema = new mongoose.Schema({
     userAssociated :  {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "user"
+        ref : "user",
     },
     jobAssociated : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "jobSchema"
+        ref : "jobSchema",
     },
     whyHire: {
         type: String,
@@ -16,6 +16,10 @@ const Schema = new mongoose.Schema({
     candidateAvailability : {
         type : String ,
         default : null
+    },
+    appliedOn : {
+        type : Date ,
+        default : Date.now()
     }
 });
 
