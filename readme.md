@@ -8,8 +8,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/changePassword :** To change the current password.
 **- /api/v1/user/forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
 **- /api/v1/user/forgetPassword :** To change Password 
-**- /api/v1/user/userDetails?email=emailOfUser :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
-**- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
+**- /api/v1/user/userDetails?email=emailOfUser :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]  
+**- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]   
 
 #### Business Routes [/api/v1/business]
 **- /signup?coupon=someCoupon :** To add user to database.   
@@ -21,7 +21,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
 **- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 
-#### Jobs 
+#### Jobs [/api/v1/jobs]
 - /postJob = To Post A Job
 - /findJob = To Find Job (different queries to be added)
 - /applyJob = To Apply for a job
@@ -40,7 +40,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - making an endpoint for user to update his/her resume 
 - asking which parameters will we be using to retrieve different kind of jobs
 - line 40 : jobsController
-
+- adding check for email to match with website's domain.
 ## Responses :
 #### - OTP :
 - If we fail to send in OTP :
