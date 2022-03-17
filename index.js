@@ -9,6 +9,7 @@ const cors = require("./middleware/cors");
 //Routes
 const userRoute = require("./routes/userRoute");
 const businessRoute = require("./routes/businessRoute");
+const jobRoute = require("./routes/jobRoute");
 
 // const admin_business = require("./routes/admin/business/business")
 // const admin_internships = require("./routes/admin/internships/internships")
@@ -30,6 +31,7 @@ app.use(cors);
 //using Routes
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/business",businessRoute);
+app.use("/api/v1/jobs",jobRoute);
 
 
 database()
