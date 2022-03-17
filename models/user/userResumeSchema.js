@@ -1,9 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const resume_schema = mongoose.model('resume_schema', {
-
-    user_id: {
-        type: String
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref : "user"
     },
     education: {
         type: [String]

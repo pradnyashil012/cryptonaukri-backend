@@ -1,12 +1,6 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
-const router = new express.Router()
-const cors = require('cors')
 const admin_schema = require('../../../models/admin/schema/admin_schema')
-const user_schema = require('../../../models/user/schema/user_schema')
+const user_schema = require('../../../models/user/schema/userSchema')
 const bcrypt = require('bcrypt')
-const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const smtpTransport = require('nodemailer/lib/smtp-transport')
 var officialotp, otp2;
@@ -20,11 +14,6 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-router.use(cors())
-
-router.use(bodyParser.urlencoded({ extended: false }))
-router.use(bodyParser.json());
 
 
 

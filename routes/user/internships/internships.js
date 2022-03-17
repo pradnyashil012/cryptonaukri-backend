@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const router = new express.Router()
 
-const user_schema = require('../../../models/user/schema/user_schema')
+const user_schema = require('../../../models/user/schema/userSchema')
 
 
 

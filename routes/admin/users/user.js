@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const router = new express.Router()
 const cors = require('cors')
 const admin_schema = require('../../../models/admin/schema/admin_schema')
-const user_schema = require('../../../models/user/schema/user_schema')
+const user_schema = require('../../../models/user/schema/userSchema')
 
 
 

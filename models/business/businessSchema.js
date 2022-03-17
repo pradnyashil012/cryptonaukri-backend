@@ -1,20 +1,20 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const business_schema = mongoose.model('business_schema', {
-
-    name: {
+const Schema = new mongoose.Schema({
+    executiveName: {
         type: String,
         require: true,
     },
-    officialemail: {
+    officialEmail: {
         type: String,
+        unique : true,
         require: true,
     },
     password: {
         type: String,
         require: true,
     },
-    companyname: {
+    companyName: {
         type: String,
         require: true,
     },
@@ -22,34 +22,29 @@ const business_schema = mongoose.model('business_schema', {
         type: String,
         require: true,
     },
-    estyear: {
+    establishedYear: {
         type: String,
         require: true,
     },
-    gstin: {
+    GSTIN: {
         type: String,
-        require: false,
+        default : null
     },
     headquarters: {
         type: String,
         require: true,
     },
-    phonenumber: {
+    phoneNumber: {
         type: String,
         require: true,
     },
-    websitelink: {
+    websiteLink: {
         type: String,
-        require: true,
     },
-    isVerified: {
-        type: Boolean,
-
-    },
-    otp: {
-        type: String,
+    ROLE : {
+        type : String ,
+        default : "BUSINESS"
     }
+});
 
-})
-
-module.exports = business_schema
+module.exports = mongoose.model("business",Schema);
