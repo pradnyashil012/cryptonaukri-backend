@@ -4,7 +4,9 @@ const businessDatabase = require("../models/business/businessSchema");
 
 exports.postJob = async (req,res)=>{
     try{
-        req.body.postedBy = req.user._id;
+        const {executiveName , officialEmail , companyName , websiteLink , _id} = req.user;
+        req.body.postedBy = _id;
+        req.body.postedByDetails = {executiveName,officialEmail,companyName,websiteLink};
         const data = await jobsDatabase.create(req.body);
         return res.status(201).json({
             code : "JOB_ADDED",
