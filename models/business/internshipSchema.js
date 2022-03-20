@@ -93,8 +93,6 @@ const internships_schema = mongoose.model('internships_schema', {
         type: String,
         require: true,
     },
-
-
-})
+});
 
 module.exports = internships_schema
