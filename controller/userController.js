@@ -7,6 +7,7 @@ const redisClient = new Redis(process.env.REDIS);
 const couponDatabase = require("../models/couponModel");
 const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 const userAnswersDatabase = require("../models/user/userAnswersModel");
+const userResumeDatabase = require("../models/user/userResumeSchema");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -326,10 +327,28 @@ exports.userDetails = async (req,res)=>{
         });
     }
 }
-exports.loggedInUserDetails = async (req,res)=>{
-    const {firstName , lastName , email , phoneNumber , password , location ,
-        dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
+exports.addUserResume = async (req,res)=>{
+    try{
+        req.body.userAssociated = req.user._id;
+        const data = await userResumeDatabase.create(req.body);
+        return res.status(201).json({
+           resumeAdded : true ,
+           code : "RESUME_ADDED",
+           data
+        });
+    }catch (e) {
+        res.status(400).json({
+            resumeAdded : false ,
+            code : "RESUME_NOT_ADDED",
+        });
+    }
+}
 
+exports.loggedInUserDetails = async (req,res)=>{
+     const {firstName , lastName , email , phoneNumber , password , location ,
+        dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
      const appliedAt = await userAnswersDatabase.find({userAssociated: req.user._id});
-    return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining , ROLE , couponCode , accountDisableDate , _id , appliedAt});
+     const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+     return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining
+        , ROLE , couponCode , accountDisableDate , _id , appliedAt , userResume});
 }
