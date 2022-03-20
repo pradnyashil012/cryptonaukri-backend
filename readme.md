@@ -13,7 +13,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 
 #### Business Routes [/api/v1/business]
-**- /signup?coupon=someCoupon :** To add user to database.   
+**- /signup:** To add user to database.   
 **- /login :** To login   
 **- /otp?email=youremail :** To get OTP at particular email address   
 **- /changePassword :** To change the current password.
