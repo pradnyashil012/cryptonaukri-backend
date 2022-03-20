@@ -6,6 +6,7 @@ const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
 const couponDatabase = require("../models/couponModel");
 const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
+const userAnswersDatabase = require("../models/user/userAnswersModel");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -326,10 +327,9 @@ exports.userDetails = async (req,res)=>{
     }
 }
 exports.loggedInUserDetails = async (req,res)=>{
-    // it's response will include more things in the future.
-    return res.status(200).json(req.user);
+    const {firstName , lastName , email , phoneNumber , password , location ,
+        dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
+
+     const appliedAt = await userAnswersDatabase.find({userAssociated: req.user._id});
+    return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining , ROLE , couponCode , accountDisableDate , _id , appliedAt});
 }
-
-
-
-
