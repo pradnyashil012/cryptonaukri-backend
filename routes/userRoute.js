@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {userSignup , userLogin, sendOTP, changePassword , forgetPasswordOTP ,forgetPassword, userDetails,
-    loggedInUserDetails
+    loggedInUserDetails, addUserResume
 } = require("../controller/userController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 
@@ -23,6 +23,8 @@ router.route("/userDetails")
     .get(userDetails);
 router.route("/loggedInUserDetails")
     .get(verifyJWT,loggedInUserDetails);
+router.route("/addResume")
+    .post(verifyJWT,addUserResume);
 
 //Test Route
 router.route("/test")
