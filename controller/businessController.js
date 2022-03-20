@@ -8,7 +8,7 @@ const jobsDatabase = require("../models/business/jobSchema");
 
 
 exports.sendOTP = async (req,res)=>{
-    const businessPresenceCheck = await businessDatabase.findOne({email : req.query.email});
+    const businessPresenceCheck = await businessDatabase.findOne({officialEmail : req.query.email});
     if(!businessPresenceCheck){
         const transporter = nodemailer.createTransport({
             service:"gmail",
@@ -62,6 +62,7 @@ exports.sendOTP = async (req,res)=>{
             }
         });
     }else{
+
         return res.status(400).json({
             code : "DUPLICATE",
             userAdded : false,
