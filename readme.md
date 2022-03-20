@@ -41,7 +41,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - adding endpoints for internship 
 - making an endpoint for user to update his/her resume 
 - asking which parameters will we be using to retrieve different kind of jobs
-- line 40 : jobsController
+- line 67 : jobsController
 
 ## Responses :
 #### - OTP :
