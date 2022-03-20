@@ -27,6 +27,28 @@ exports.findJobs = async (req,res)=>{
     });
 }
 
+exports.findJob = async (req,res)=>{
+    try{
+        const data = await jobsDatabase.findById(req.params.jobID);
+        if(data){
+            return res.status(200).json({
+                code : "JOB_FOUND",
+                data
+            });
+        }else{
+            return res.status(404).json({
+                code : "JOB_NOT_FOUND",
+                data
+            });
+        }
+    }catch (e){
+        return res.status(400).json({
+            code : "WRONG_ID_FORMAT",
+            message : "JOB ID format is wrong"
+        });
+    }
+}
+
 exports.applyJob = async (req,res)=>{
     if(req.user.ROLE !== "BUSINESS"){
         try{
