@@ -62,7 +62,6 @@ exports.sendOTP = async (req,res)=>{
             }
         });
     }else{
-
         return res.status(400).json({
             code : "DUPLICATE",
             userAdded : false,
@@ -97,6 +96,7 @@ exports.businessSignup = async (req,res)=>{
                         userAdded : true,
                         message : "Business has been added successfully"
                     });
+
                 }catch (error) {
                     // Need to make this error more specific.
                     return res.status(400).json({
