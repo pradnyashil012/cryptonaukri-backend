@@ -10,6 +10,12 @@ const Schema = new mongoose.Schema({
         ref : "business",
         unique : false
     },
+    postedByDetails : {
+        executiveName : String,
+        officialEmail : String ,
+        companyName : String ,
+        websiteLink : String ,
+    },
     postedOn : {
         type : Date ,
         default:  Date.now()
