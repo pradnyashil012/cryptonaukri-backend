@@ -1,5 +1,6 @@
 const jobsDatabase = require("../models/business/jobSchema");
 const userAnswerDatabase = require("../models/user/userAnswersModel");
+const businessDatabase = require("../models/business/businessSchema");
 
 exports.postJob = async (req,res)=>{
     try{
@@ -31,9 +32,10 @@ exports.findJob = async (req,res)=>{
     try{
         const data = await jobsDatabase.findById(req.params.jobID);
         if(data){
+            data.postedBy = await businessDatabase.findById(data.postedBy);
             return res.status(200).json({
                 code : "JOB_FOUND",
-                data
+                details : data
             });
         }else{
             return res.status(404).json({
