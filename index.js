@@ -16,11 +16,8 @@ const jobRoute = require("./routes/jobRoute");
 // const admin_jobs = require("./routes/admin/jobs/jobs")
 // const admin_users = require("./routes/admin/users/user")
 //
-// const business_jobs = require("./routes/business/jobs/jobs")
 // const business_interships = require("./routes/business/internships/internships")
 //
-// const user_interships = require("./routes/user/internships/internships")
-// const user_jobs = require("./routes/user/jobs/jobs")
 // const user_resume = require("./routes/user/resume/resume")
 
 //Middleware
