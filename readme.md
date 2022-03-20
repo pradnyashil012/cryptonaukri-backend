@@ -22,10 +22,11 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]   
 **- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]   
 
-#### Jobs 
+#### Jobs [/api/v1/jobs]
 - /postJob = To Post A Job
 - /findJob = To Find Job (different queries to be added)
 - /applyJob = To Apply for a job
+- /findJob/:jobID = To find a specific Job
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
