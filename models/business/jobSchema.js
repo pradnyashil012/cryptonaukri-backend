@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const Schema = new mongoose.Schema({
     usersApplied: [{
         type : mongoose.Schema.Types.Object ,
@@ -113,34 +112,4 @@ const Schema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("jobSchema",Schema);
-/*
- "title": "fo",
- "locationtype": "fo",
- "contract": "fo",
- "location": "fo",
- "openings": "fo",
- "experince": "fo",
- "description": "fo",
- "ctc": "fo",
-
- "fixedpay": "fo",
- "variablepay": "fo",
- "incentives": "fo",
- "probationperiod": "fo",
- "probationduration": "fo",
- "probationsalary": "fo",
- "perks": "fo",
-
- "fivedaysweek": "fo",
- "transportation": "fo",
- "informaldress": "fo",
- "healthinsurance": "fo",
- "snacks": "fo",
- "skills": "fo",
- "candidatepreferences": "fo",
- "whyhire": "fo",
-
- "question": "fo",
- "status": "fo",
-
-*/
+//6230a477fe7cf52e12a9f8e3
