@@ -82,9 +82,9 @@ exports.userSignup = async (req,res)=>{
             if( Number(data) === req.body.otp){
                 if(req.query.coupon){
                     const couponData = await couponDatabase.findOne({ couponCode : req.query.coupon });
-                    if(couponData.referredUserEmail.length < 5){
+                    if(couponData.referredUserEmail.length < 3){
                         const userAssociatedWithCoupon = await userDatabase.findOne({email : couponData.userAssociated});
-                        userAssociatedWithCoupon.accountDisableDate = new Date(userAssociatedWithCoupon.accountDisableDate.setDate(userAssociatedWithCoupon.accountDisableDate.getDate() + 7));
+                        userAssociatedWithCoupon.accountDisableDate = new Date(userAssociatedWithCoupon.accountDisableDate.setDate(userAssociatedWithCoupon.accountDisableDate.getDate() + 14));
                         await userDatabase.findByIdAndUpdate(userAssociatedWithCoupon._id,userAssociatedWithCoupon);
                         couponData.referredUserEmail.push(req.body.email);
                         await couponDatabase.findByIdAndUpdate(couponData._id,couponData);
