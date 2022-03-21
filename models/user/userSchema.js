@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     },
     accountDisableDate : {
       type : Date ,
-      default : Date.now() + 7 * 24 * 60 * 60 * 1000
+      default : Date.now() + 14 * 24 * 60 * 60 * 1000
     },
     couponCode : {
         type : String
