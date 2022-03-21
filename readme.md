@@ -40,7 +40,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - adding endpoints for internship 
 - making an endpoint for user to update his/her resume 
 - asking which parameters will we be using to retrieve different kind of jobs
-- line 67 : jobsController
+- ~~line 67 : jobsController~~[fixed]
+- increasing validation time to 14 days
 
 ## Responses :
 #### - OTP :
