@@ -1,15 +1,24 @@
-const mongoose = require('mongoose')
-
-const internships_schema = mongoose.model('internships_schema', {
-
-    user_id: {
-        type: String,
+const mongoose = require("mongoose");
+const Schema = new mongoose.Schema({
+    usersApplied : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "userAnswersInternship"
+    }],
+    postedBy : {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "business"
     },
-    title: {
-        type: String,
-        require: true,
+    postedByDetails : {
+        executiveName : String,
+        officialEmail : String ,
+        companyName : String ,
+        websiteLink : String ,
     },
-    locationType: {
+    postedOn : {
+        type : Date ,
+        default : Date.now()
+    },
+    internshipTitle: {
         type: String,
         require: true,
     },
@@ -17,7 +26,10 @@ const internships_schema = mongoose.model('internships_schema', {
         type: String,
         require: true,
     },
-
+    isRemote : {
+      type : Boolean ,
+        required : true
+    },
     openings: {
         type: Number,
         require: true,
@@ -34,65 +46,35 @@ const internships_schema = mongoose.model('internships_schema', {
         type: String,
         require: true,
     },
-
-    // Stipend
-
-    amountType: {
-        type: String,
-        require: true,
+    stipend : {
+        amountType: {
+            type: String,
+            require: true,
+        },
+        currencyType: {
+            type: String,
+            require: true,
+        },
+        amount: {
+            type: Number,
+            require: true,
+        }
     },
-    currencyType: {
-        type: String,
-        require: true,
-
+    perks : {
+        certificate: Boolean,
+        letterOfRecommendation: Boolean,
+        workHours: Number,
+        dressCode: Boolean,
+        food: Boolean,
+        isPPO: Boolean,
+        fiveDaysWeek : Boolean
     },
-    amount: {
-        type: Number,
-        require: true,
-    },
-
-    // perks
-
-    certificate: {
-        type: String,
-        require: true,
-    },
-    letterOfRecommendation: {
-        type: String,
-        require: true,
-    },
-    workHours: {
-        type: String,
-        require: true,
-    },
-    dressCode: {
-        type: String,
-        require: true,
-    },
-    food: {
-        type: String,
-        require: true,
-    },
-    isPPO: {
-        type: String,
-        require: true,
-    },
-    skills: {
-        type: [String],
-        require: true,
-    },
-    question1: {
-        type: String,
-        require: true,
-    },
-    question2: {
-        type: String,
-        require: true,
-    },
+    skills: [{
+        type : String
+    }],
     status: {
         type: String,
-        require: true,
     },
 });
 
-module.exports = internships_schema
+module.exports = mongoose.model("internshipSchema",Schema);
