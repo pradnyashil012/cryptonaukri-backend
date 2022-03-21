@@ -9,6 +9,7 @@ const educationSubSchema = new mongoose.Schema({
     coursePursued:String,
     marksScored:String
 },options);
+
 const jobsSubSchema = new mongoose.Schema({
     companyName : String ,
     startingDate  : String ,
