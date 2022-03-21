@@ -64,7 +64,7 @@ exports.applyJob = async (req,res)=>{
             }
             const jobAssociated = await jobsDatabase.findById(req.body.jobAssociated);
             // Still not sure why this is not working.......!!
-            if(jobAssociated.usersApplied.filter(value => value.userAssociated === req.user._id).length > 0){
+            if(jobAssociated.usersApplied.filter(value => String(value.userAssociated) === String(req.user._id)).length > 0){
                 return  res.status(400).json({
                     code : "JOB_APPLIED_FAILED",
                     appliedAtJob : false,
@@ -79,7 +79,7 @@ exports.applyJob = async (req,res)=>{
                 appliedAtJob : true,
                 message : "applied at current job",
                 data : updatedJobAssociated
-            })
+            });
         }catch (e) {
             console.log(e);
             return res.status(400).json({
