@@ -124,7 +124,7 @@ exports.businessSignup = async (req,res)=>{
 }
 
 exports.businessLogin = async (req,res)=>{
-    const business = await businessDatabase.findOne({email : req.body.email});
+    const business = await businessDatabase.findOne({officialEmail : req.body.email});
     if(!business){
         return res.status(404).json({
             userLoggedIn : false ,
@@ -183,7 +183,7 @@ exports.changePassword = async (req,res)=>{
 }
 
 exports.forgetPasswordOTP = async (req,res)=>{
-    const business = await businessDatabase.findOne({email : req.query.email});
+    const business = await businessDatabase.findOne({officialEmail : req.query.email});
     if(business){
         const transporter = nodemailer.createTransport({
             service:"gmail",
@@ -248,11 +248,11 @@ exports.forgetPassword = async (req,res)=>{
     redisClient.get(`BUSINESS_${req.body.email}`)
         .then(async (data) =>{
             if(Number(data)===req.body.otp){
-                const user = await businessDatabase.findOne({email : req.body.email});
+                const user = await businessDatabase.findOne({officialEmail : req.body.email});
                 const salt = await bcrypt.genSalt(10);
                 user.password = await bcrypt.hash(req.body.newPassword, salt);
                 try {
-                    await businessDatabase.updateOne({email : req.body.email} ,user);
+                    await businessDatabase.updateOne({officialEmail : req.body.email} ,user);
                     return res.status(200).json({
                         changedPassword : true ,
                         code : "CHANGED_PASSWORD",
@@ -283,7 +283,7 @@ exports.forgetPassword = async (req,res)=>{
         });
 }
 exports.businessDetails = async (req,res)=>{
-    const business = await businessDatabase.findOne({email : req.query.email});
+    const business = await businessDatabase.findOne({officialEmail : req.query.email});
     if(business){
         const jobsAdded = await jobsDatabase.find({postedBy: business._id});
         const {executiveName , officialEmail , companyName , description , establishedYear
