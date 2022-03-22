@@ -6,29 +6,28 @@ dotenv.config({
 });
 const database = require("./configuration/databaseConfig");
 const cors = require("./middleware/cors");
-//Routes
+
+//Routes Import
 const userRoute = require("./routes/userRoute");
 const businessRoute = require("./routes/businessRoute");
 const jobRoute = require("./routes/jobRoute");
+const internshipRoute = require("./routes/internshipRoute");
 
 // const admin_business = require("./routes/admin/business/business")
 // const admin_internships = require("./routes/admin/internships/internships")
 // const admin_jobs = require("./routes/admin/jobs/jobs")
 // const admin_users = require("./routes/admin/users/user")
-//
-// const business_interships = require("./routes/business/internships/internships")
-//
-// const user_resume = require("./routes/user/resume/resume")
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors);
 
-//using Routes
+//Routes
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/business",businessRoute);
 app.use("/api/v1/jobs",jobRoute);
+app.use("/api/v1/internship",internshipRoute);
 
 
 database()
