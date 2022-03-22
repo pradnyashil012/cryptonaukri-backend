@@ -25,7 +25,7 @@ exports.postJob = async (req,res)=>{
     }else {
         return res.status(403).json({
             code : "NOT_ELIGIBLE",
-            appliedAtJob : false,
+            isJobAdded : false,
             message : "You are not eligible to post job"
         });
     }
@@ -42,6 +42,7 @@ exports.findJobs = async (req,res)=>{
 exports.findJob = async (req,res)=>{
     try{
         const data = await jobsDatabase.findById(req.params.jobID);
+        console.log(data.postedBy);
         if(data){
             data.postedBy = await businessDatabase.findById(data.postedBy);
             return res.status(200).json({
@@ -72,7 +73,6 @@ exports.applyJob = async (req,res)=>{
                 candidateAvailability : req.body.candidateAvailability
             }
             const jobAssociated = await jobsDatabase.findById(req.body.jobAssociated);
-            // Still not sure why this is not working.......!!
             if(jobAssociated.usersApplied.filter(value => String(value.userAssociated) === String(req.user._id)).length > 0){
                 return  res.status(400).json({
                     code : "JOB_APPLIED_FAILED",
