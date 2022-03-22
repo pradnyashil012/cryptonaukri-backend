@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = new mongoose.Schema({
     usersApplied : [{
-        type : mongoose.Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.Object,
         ref : "userAnswersInternship"
     }],
     postedBy : {
@@ -32,10 +32,6 @@ const Schema = new mongoose.Schema({
     },
     openings: {
         type: Number,
-        require: true,
-    },
-    startDate: {
-        type: String,
         require: true,
     },
     duration: {
