@@ -27,6 +27,12 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - /applyJob = To Apply for a job
 - /findJob/:jobID = To find a specific Job
 
+#### Internship [/api/v1/internship]
+- /postInternship = To Post an Internship
+- /findInternship = To Find Internship (different queries to be added)
+- /applyInternship = To Apply for an Internship
+- /findInternship/:internshipID = To find a specific Internship
+
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
 - ~~Adding Endpoint for Forget Password thing.~~
@@ -37,11 +43,11 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~asking sir to make an account of redis cloud.~~
 - ~~adding end point for business accounts~~
 - ~~adding different kind of end points for jobs~~
-- adding endpoints for internship 
-- making an endpoint for user to update his/her resume 
+- ~~adding endpoints for internship~~
+- ~~making an endpoint for user to update his/her resume~~
 - asking which parameters will we be using to retrieve different kind of jobs
 - ~~line 67 : jobsController~~[fixed]
-- increasing validation time to 14 days
+- ~~increasing validation time to 14 days~~
 
 ## Responses :
 #### - OTP :
