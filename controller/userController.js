@@ -8,7 +8,7 @@ const couponDatabase = require("../models/couponModel");
 const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 const userAnswersDatabase = require("../models/user/userAnswersModel");
 const userResumeDatabase = require("../models/user/userResumeSchema");
-
+const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
 
 exports.sendOTP = async (req,res)=>{
     const userPresenceCheck = await userDatabase.findOne({email : req.query.email});
@@ -313,10 +313,11 @@ exports.userDetails = async (req,res)=>{
     const user = await userDatabase.findOne({email:req.query.email});
     if(user){
         const {firstName , lastName , email , phoneNumber , location } = user;
+        const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
         return res.status(200).json({
             userFound : true ,
             details : {
-                firstName, lastName, email , phoneNumber , location
+                firstName, lastName, email , phoneNumber , location , userResume
             }
         });
     }else{
@@ -345,14 +346,27 @@ exports.addUserResume = async (req,res)=>{
 }
 
 exports.loggedInUserDetails = async (req,res)=>{
+    if(req.user.ROLE === "USER"){
+        try{
+            const {firstName , lastName , email , phoneNumber , password , location ,
+                dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
+            const appliedAtJobs = await userAnswersDatabase.find({userAssociated: req.user._id});
+            const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+            const appliedAtInternships = await userAnswersInternshipDatabase.find({userAssociated : req.user._id});
 
-    const {firstName , lastName , email , phoneNumber , password , location ,
-        dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
-     const appliedAt = await userAnswersDatabase.find({userAssociated: req.user._id});
-     const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
-
-
-
-     return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining
-        , ROLE , couponCode , accountDisableDate , _id , appliedAt , userResume});
+            return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining
+                , ROLE , couponCode , accountDisableDate , _id , appliedAtInternships, appliedAtJobs , userResume});
+        }catch (e) {
+            return res.status(400).json({
+                code : "ERROR",
+                message : "some error occurred while fetching the data"
+            });
+        }
+    }else{
+        return res.status(403).json({
+            code : "NOT_ELIGIBLE",
+            appliedAtJob : false,
+            message : "You are not eligible to apply at current job"
+        });
+    }
 }
