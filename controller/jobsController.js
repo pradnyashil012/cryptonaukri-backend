@@ -81,6 +81,8 @@ exports.applyJob = async (req,res)=>{
                     message : "Failed to apply at current job as you have already applied to it before",
                 });
             }
+            const {firstName , lastName , email } = req.user;
+            data.userDetails = {firstName,lastName,email};
             const savedData = await userAnswerDatabase.create(data);
             jobAssociated.usersApplied.push(savedData);
             const updatedJobAssociated = await jobsDatabase.findByIdAndUpdate(jobAssociated._id , jobAssociated , {new : true});
