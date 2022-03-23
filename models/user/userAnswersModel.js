@@ -5,6 +5,11 @@ const Schema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "user",
     },
+    userDetails : {
+        firstName : String,
+        lastName : String,
+        email : String
+    },
     jobAssociated : {
         type : mongoose.Schema.Types.ObjectId,
         ref : "jobSchema",
