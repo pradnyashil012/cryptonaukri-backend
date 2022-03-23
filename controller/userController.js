@@ -310,7 +310,12 @@ exports.forgetPassword = async (req,res)=>{
 }
 
 exports.userDetails = async (req,res)=>{
-    const user = await userDatabase.findOne({email:req.query.email});
+    let user ;
+    if(req.query.userID){
+        user = await userDatabase.findById(req.query.userID);
+    }else if(req.query.email){
+        user =await userDatabase.findOne({email:req.query.email});
+    }
     if(user){
         const {firstName , lastName , email , phoneNumber , location } = user;
         const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
