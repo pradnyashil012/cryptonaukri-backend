@@ -16,6 +16,7 @@ exports.postJob = async (req,res)=>{
                 details : data
             });
         }catch (e) {
+            console.log(e);
             return res.status(400).json({
                 code : "JOB_ADDITION_FAILED",
                 isJobAdded : false ,
