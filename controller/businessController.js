@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
 const jobsDatabase = require("../models/business/jobSchema");
+const internshipDatabase = require("../models/business/internshipSchema");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -302,13 +303,29 @@ exports.businessDetails = async (req,res)=>{
 }
 
 exports.loggedInBusinessDetails = async (req,res)=> {
-    //adding safety check so that user cannot access this endpoint
-    const jobsAdded = await jobsDatabase.find({postedBy: req.user._id});
-    const {executiveName , officialEmail , companyName , description , establishedYear
-        , headquarters , websiteLink , password , GSTIN} = req.user;
+    if(req.user.ROLE === "BUSINESS"){
+        try {
+            const jobsAdded = await jobsDatabase.find({postedBy: req.user._id});
+            const {executiveName , officialEmail , companyName , description , establishedYear
+                , headquarters , websiteLink , password , GSTIN} = req.user;
+            const internshipsAdded = await internshipDatabase.find({postedBy : req.user._id});
 
-    return res.status(200).json({executiveName , officialEmail , companyName , description , establishedYear
-        , headquarters , websiteLink , password, GSTIN , jobsAdded  });
+            return res.status(200).json({executiveName , officialEmail , companyName , description , establishedYear
+                , headquarters , websiteLink , password, GSTIN , jobsAdded , internshipsAdded  });
+        }catch (e) {
+            console.log(e);
+            return res.status(400).json({
+                code : "ERROR",
+                message : "some error occurred while fetching the data"
+            });
+        }
+    }else{
+        return res.status(403).json({
+            code : "NOT_ELIGIBLE",
+            appliedAtJob : false,
+            message : "You are not eligible to apply at current job"
+        });
+    }
 }
 
 
