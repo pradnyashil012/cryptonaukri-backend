@@ -345,10 +345,14 @@ exports.addUserResume = async (req,res)=>{
 }
 
 exports.loggedInUserDetails = async (req,res)=>{
-     const {firstName , lastName , email , phoneNumber , password , location ,
+
+    const {firstName , lastName , email , phoneNumber , password , location ,
         dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
      const appliedAt = await userAnswersDatabase.find({userAssociated: req.user._id});
      const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+
+
+
      return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining
         , ROLE , couponCode , accountDisableDate , _id , appliedAt , userResume});
 }
