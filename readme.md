@@ -9,6 +9,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/forgetPasswordOTP?email=youremail :** To get OTP for validation required to change password for changing password.
 **- /api/v1/user/forgetPassword :** To change Password 
 **- /api/v1/user/userDetails?email=emailOfUser :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
+**- /api/v1/user/userDetails?userID=id :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
 **- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 **- /api/v1/user/addResume** : To add user resume [pass in jwt]
 #### Business Routes [/api/v1/business]
