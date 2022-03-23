@@ -49,11 +49,3 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("user",userSchema);
-/*
-job_id: {
-    type: [String]
-},
-internship_id: {
-    type: [String]
-},
- */
