@@ -9,6 +9,11 @@ const Schema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "internshipSchema"
     },
+    userDetails : {
+        firstName : String,
+        lastName : String,
+        email : String
+    },
     whyHire: {
         type: String,
         default : null
