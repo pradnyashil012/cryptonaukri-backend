@@ -6,6 +6,8 @@ const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
 const jobsDatabase = require("../models/business/jobSchema");
 const internshipDatabase = require("../models/business/internshipSchema");
+const businessCouponDatabase = require("../models/businessCouponModel");
+const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -71,57 +73,75 @@ exports.sendOTP = async (req,res)=>{
     }
 }
 
-
 exports.businessSignup = async (req,res)=>{
-    redisClient.get(`BUSINESS_${req.body.officialEmail}`)
-        .then( async (data)=> {
-            if( Number(data) === req.body.otp){
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(req.body.password , salt);
-                const businessDataToBeSaved = {
-                    executiveName : req.body.executiveName,
-                    officialEmail : req.body.officialEmail,
-                    password : hashedPassword,
-                    companyName : req.body.companyName,
-                    description : req.body.description,
-                    establishedYear : req.body.establishedYear,
-                    GSTIN : req.body.GSTIN,
-                    headquarters : req.body.headquarters,
-                    phoneNumber : req.body.phoneNumber,
-                    websiteLink : req.body.websiteLink
-                };
-                try{
-                    await businessDatabase.create(businessDataToBeSaved);
-                    return res.status(201).json({
-                        code : "BUSINESS_ADDED",
-                        userAdded : true,
-                        message : "Business has been added successfully"
-                    });
-
-                }catch (error) {
-                    // Need to make this error more specific.
-                    return res.status(400).json({
-                        code : "DUPLICATE",
-                        userAdded : false,
-                        message : "Email ID already exists"
-                    });
-                }
-            }else{
-                return res.status(400).json({
-                    code : "WRONG_OTP",
-                    userAdded : false,
-                    message : "Wrong OTP"
-                });
-            }
-        })
-        .catch(error =>{
-            console.log(error);
-            return res.status(400).json({
-                code : "OTP_RETRIEVAL",
-                userAdded : false,
-                message : "some error occurred while retrieving the OTP"
-            });
+    const businessCoupon = await businessCouponDatabase.findOne({coupon : req.query.coupon});
+    if(businessCoupon){
+       if(!businessCoupon.businessAssociated){
+           redisClient.get(`BUSINESS_${req.body.officialEmail}`)
+               .then( async (data)=> {
+                   if( Number(data) === req.body.otp){
+                       const salt = await bcrypt.genSalt(10);
+                       const hashedPassword = await bcrypt.hash(req.body.password , salt);
+                       const businessDataToBeSaved = {
+                           executiveName : req.body.executiveName,
+                           officialEmail : req.body.officialEmail,
+                           password : hashedPassword,
+                           companyName : req.body.companyName,
+                           description : req.body.description,
+                           establishedYear : req.body.establishedYear,
+                           GSTIN : req.body.GSTIN,
+                           headquarters : req.body.headquarters,
+                           phoneNumber : req.body.phoneNumber,
+                           websiteLink : req.body.websiteLink
+                       };
+                       try{
+                           await businessDatabase.create(businessDataToBeSaved);
+                           const businessCoupon = await businessCouponDatabase.findOne({coupon : req.query.coupon});
+                           businessCoupon.businessAssociated = req.body.officialEmail;
+                           businessCouponDatabase.findByIdAndUpdate(businessCoupon._id , businessCoupon);
+                           return res.status(201).json({
+                               code : "BUSINESS_ADDED",
+                               userAdded : true,
+                               message : "Business has been added successfully"
+                           });
+                       }catch (error) {
+                           // Need to make this error more specific.
+                           return res.status(400).json({
+                               code : "DUPLICATE",
+                               userAdded : false,
+                               message : "Email ID already exists"
+                           });
+                       }
+                   }else{
+                       return res.status(400).json({
+                           code : "WRONG_OTP",
+                           userAdded : false,
+                           message : "Wrong OTP"
+                       });
+                   }
+               })
+               .catch(error =>{
+                   console.log(error);
+                   return res.status(400).json({
+                       code : "OTP_RETRIEVAL",
+                       userAdded : false,
+                       message : "some error occurred while retrieving the OTP"
+                   });
+               });
+       }else{
+           return res.status(400).json({
+               code : "COUPON_USED",
+               userAdded : false ,
+               message  : "sorry coupon which you are trying to use is associated with someone else"
+           })
+       }
+    }else{
+        return res.status(400).json({
+            code : "WRONG_COUPON",
+            userAdded : false ,
+            message  : "sorry coupon which you are trying to use does not exist"
         });
+    }
 }
 
 exports.businessLogin = async (req,res)=>{
@@ -141,6 +161,13 @@ exports.businessLogin = async (req,res)=>{
             message : "business's entered password was wrong"
         });
     }
+    if(business.accountDisableDate < Date.now()){
+        return res.status(400).json({
+            code : "INVALID",
+            message : "Account has been disabled(free trial period expired)"
+        });
+    }
+
     const token = await jwt.sign({
         businessID : business._id,
     },process.env.JWT_KEY, {
@@ -324,6 +351,20 @@ exports.loggedInBusinessDetails = async (req,res)=> {
             code : "NOT_ELIGIBLE",
             appliedAtJob : false,
             message : "You are not eligible to apply at current job"
+        });
+    }
+}
+
+exports.ownerOTPGeneration = async (req,res)=>{
+    if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
+        const couponCode = await couponGeneration();
+        return res.status(201).json({
+            couponCode ,
+            message : "Coupon Code generated"
+        });
+    }else{
+        return res.status(403).json({
+            message : "Sorry You are not authorized to access this endpoint"
         });
     }
 }
