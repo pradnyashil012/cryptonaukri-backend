@@ -1,5 +1,6 @@
 # Cryptonaukri Backend 
 Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
+
 ## End Points : 
 #### User Routes
 **- /api/v1/user/signup?coupon=someCoupon :** To add user to database.   
@@ -12,8 +13,9 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /api/v1/user/userDetails?userID=id :** To get user details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]
 **- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 **- /api/v1/user/addResume** : To add user resume [pass in jwt]
+
 #### Business Routes [/api/v1/business]
-**- /signup:** To add user to database.   
+**- /signup?coupon=coupon:** To add user to database.   
 **- /login :** To login   
 **- /otp?email=youremail :** To get OTP at particular email address   
 **- /changePassword :** To change the current password.
@@ -21,18 +23,25 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 **- /forgetPassword :** To change Password
 **- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]   
 **- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]   
+**- /owner** : To get coupon of for business sign-up.
+```
+{
+    "username":"cryptonaukri_owner",
+    "password":"iiit@nagpur"
+}
+```
 
 #### Jobs [/api/v1/jobs]
-- /postJob = To Post A Job
-- /findJob = To Find Job (different queries to be added)
-- /applyJob = To Apply for a job
-- /findJob/:jobID = To find a specific Job
+- **/postJob** = To Post A Job
+- **/findJob** = To Find Job (different queries to be added)
+- **/applyJob** = To Apply for a job
+- **/findJob/:jobID** = To find a specific Job
 
 #### Internship [/api/v1/internship]
-- /postInternship = To Post an Internship
-- /findInternship = To Find Internship (different queries to be added)
-- /applyInternship = To Apply for an Internship
-- /findInternship/:internshipID = To find a specific Internship
+- **/postInternship** = To Post an Internship
+- **/findInternship** = To Find Internship (different queries to be added)
+- **/applyInternship** = To Apply for an Internship
+- **/findInternship/:internshipID** = To find a specific Internship
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
@@ -49,6 +58,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - asking which parameters will we be using to retrieve different kind of jobs
 - ~~line 67 : jobsController~~[fixed]
 - ~~increasing validation time to 14 days~~
+- ~~adding endpoint for owner to get coupons for business~~
+- ~~adding companyName and position applied for when user is fetching his details~~
 
 ## Responses :
 #### - OTP :
