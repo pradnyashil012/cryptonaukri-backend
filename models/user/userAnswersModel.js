@@ -14,6 +14,10 @@ const Schema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "jobSchema",
     },
+    jobDetails : {
+        jobTitle : String ,
+        jobDescription : String
+    },
     whyHire: {
         type: String,
         default : null
