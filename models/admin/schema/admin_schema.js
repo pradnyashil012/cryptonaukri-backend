@@ -37,18 +37,6 @@ const admin_schema = mongoose.model('admin_schema', {
         require: true,
     },
 
-    isVerified: {
-
-        type: Boolean,
-
-    },
-    otp: {
-
-        type: String,
-
-
-    }
-
 
 })
 
