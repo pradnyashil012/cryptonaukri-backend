@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const {sendOTP, businessSignup, businessLogin, forgetPasswordOTP, forgetPassword, changePassword, businessDetails,
-    loggedInBusinessDetails
+    loggedInBusinessDetails, ownerOTPGeneration
 } = require("../controller/businessController");
 
 router.route("/otp")
@@ -21,6 +21,8 @@ router.route("/loggedInBusinessDetails")
     .get(verifyJWT,loggedInBusinessDetails);
 router.route("/changePassword")
     .post(verifyJWT,changePassword);
+router.route("/owner")
+    .post(ownerOTPGeneration);
 
 //Test Route
 router.route("/test")
