@@ -18,6 +18,10 @@ const Schema = new mongoose.Schema({
         type: String,
         default : null
     },
+    internshipDetails : {
+        internshipTitle : String ,
+        responsibilities: String ,
+    },
     candidateAvailability : {
         type : String ,
         default : null
