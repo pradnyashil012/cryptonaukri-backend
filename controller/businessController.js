@@ -98,7 +98,7 @@ exports.businessSignup = async (req,res)=>{
                            await businessDatabase.create(businessDataToBeSaved);
                            const businessCoupon = await businessCouponDatabase.findOne({coupon : req.query.coupon});
                            businessCoupon.businessAssociated = req.body.officialEmail;
-                           businessCouponDatabase.findByIdAndUpdate(businessCoupon._id , businessCoupon);
+                           await businessCouponDatabase.findByIdAndUpdate(businessCoupon._id , businessCoupon);
                            return res.status(201).json({
                                code : "BUSINESS_ADDED",
                                userAdded : true,
