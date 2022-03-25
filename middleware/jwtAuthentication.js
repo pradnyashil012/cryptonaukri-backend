@@ -32,6 +32,13 @@ exports.verifyJWT = async (req,res,next)=>{
             next();
         }else if(jwtVerify.businessID){
             req.user = await businessDatabase.findById(jwtVerify.businessID);
+            if(req.user.accountDisableDate < Date.now()){
+                await businessDatabase.findByIdAndUpdate(req.user._id , req.user);
+                return res.status(400).json({
+                    code : "INVALID",
+                    message : "Account has been disabled(free trial period expired)"
+                });
+            }
             next();
         }
     }catch (e) {
