@@ -83,7 +83,12 @@ exports.applyJob = async (req,res)=>{
             }
             const {firstName , lastName , email } = req.user;
             data.userDetails = {firstName,lastName,email};
+
+            const {jobTitle , jobDescription} = jobAssociated;
+            data.jobDetails = {jobTitle , jobDescription};
+
             const savedData = await userAnswerDatabase.create(data);
+
             jobAssociated.usersApplied.push(savedData);
             const updatedJobAssociated = await jobsDatabase.findByIdAndUpdate(jobAssociated._id , jobAssociated , {new : true});
             return res.status(200).json({
