@@ -78,8 +78,13 @@ exports.applyInternship = async (req,res)=>{
                     message : "Failed to apply at current internship as you have already applied to it before",
                 });
             }
+
             const {firstName , lastName , email } = req.user;
             data.userDetails = {firstName,lastName,email};
+
+            const {internshipTitle , responsibilities } = internshipAssociated;
+            data.internshipDetails = {internshipTitle,responsibilities};
+
             const savedData = await internshipAnswerDatabase.create(data);
             internshipAssociated.usersApplied.push(savedData);
             const updatedInternshipAssociated = await internshipDatabase.findByIdAndUpdate(internshipAssociated._id , internshipAssociated , {new : true});
