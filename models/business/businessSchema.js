@@ -44,6 +44,10 @@ const Schema = new mongoose.Schema({
     ROLE : {
         type : String ,
         default : "BUSINESS"
+    },
+    accountDisableDate : {
+        type : Date ,
+        default : Date.now() + 28 * 24 * 60 * 60 * 1000
     }
 });
 
