@@ -29,7 +29,6 @@ app.use("/api/v1/business",businessRoute);
 app.use("/api/v1/jobs",jobRoute);
 app.use("/api/v1/internship",internshipRoute);
 
-
 database()
     .then(()=>console.log("Connected To Database"))
     .catch(()=>console.log("Connection To Database Failed"));
