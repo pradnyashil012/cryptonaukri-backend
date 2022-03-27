@@ -55,11 +55,14 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~adding different kind of end points for jobs~~
 - ~~adding endpoints for internship~~
 - ~~making an endpoint for user to update his/her resume~~
-- asking which parameters will we be using to retrieve different kind of jobs
 - ~~line 67 : jobsController~~[fixed]
 - ~~increasing validation time to 14 days~~
 - ~~adding endpoint for owner to get coupons for business~~
 - ~~adding companyName and position applied for when user is fetching his details~~
+- adding ROLE to body of JWT
+- improving admin schema
+- adding endpoints for admin
+- asking which parameters will we be using to retrieve different kind of jobs
 
 ## Responses :
 #### - OTP :
