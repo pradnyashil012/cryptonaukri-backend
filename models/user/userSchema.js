@@ -44,8 +44,7 @@ const userSchema = new mongoose.Schema({
     },
     couponCode : {
         type : String
-    },
-
+    }
 });
 
 module.exports = mongoose.model("user",userSchema);
