@@ -43,6 +43,11 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - **/applyInternship** = To Apply for an Internship
 - **/findInternship/:internshipID** = To find a specific Internship
 
+#### Admin [/api/v1/admin]
+- /login = For Admin Login
+- /signup?key=adminKey = For admin signup (Pass User JWT)
+- /deleteJob/:jobID = To Delete Job 
+
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
 - ~~Adding Endpoint for Forget Password thing.~~
