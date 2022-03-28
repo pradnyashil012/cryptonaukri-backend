@@ -12,11 +12,7 @@ const userRoute = require("./routes/userRoute");
 const businessRoute = require("./routes/businessRoute");
 const jobRoute = require("./routes/jobRoute");
 const internshipRoute = require("./routes/internshipRoute");
-
-// const admin_business = require("./routes/admin/business/business")
-// const admin_internships = require("./routes/admin/internships/internships")
-// const admin_jobs = require("./routes/admin/jobs/jobs")
-// const admin_users = require("./routes/admin/users/user")
+const adminRoute = require("./routes/adminRoute");
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +24,7 @@ app.use("/api/v1/user",userRoute);
 app.use("/api/v1/business",businessRoute);
 app.use("/api/v1/jobs",jobRoute);
 app.use("/api/v1/internship",internshipRoute);
+app.use("/api/v1/admin",adminRoute);
 
 database()
     .then(()=>console.log("Connected To Database"))
