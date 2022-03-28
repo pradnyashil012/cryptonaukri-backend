@@ -168,6 +168,7 @@ exports.userLogin = async (req,res)=>{
     }
     const token = await jwt.sign({
         userID : user._id,
+        ROLE : "USER"
     },process.env.JWT_KEY, {
         expiresIn : "48h"
     });
