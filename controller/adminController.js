@@ -1,0 +1,131 @@
+const adminDatabase = require("../models/admin/adminSchema");
+const adminKeyDatabase = require("../models/admin/adminKey");
+const userDatabase = require("../models/user/userSchema");
+const jobDatabase = require("../models/business/jobSchema");
+const internshipDatabase = require("../models/business/internshipSchema");
+const userAnswersJobDatabase = require("../models/user/userAnswersModel");
+const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
+const adminLogDatabase = require("../models/admin/adminLogs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const keyGeneration = require("../utils/adminKeyGeneration");
+
+exports.ownerAdminKeyGeneration = async (req,res)=>{
+    if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
+        const key = await keyGeneration();
+        return res.status(201).json({
+            key ,
+            message : "Admin Key generated"
+        });
+    }else{
+        return res.status(403).json({
+            message : "Sorry You are not authorized to access this endpoint"
+        });
+    }
+}
+
+exports.adminSignup = async (req,res)=>{
+    try{
+        if(req.user.ROLE === "USER"){
+            if(req.query.key){
+                const key = await adminKeyDatabase.findOne({key : req.query.key});
+                if(!key.userAssociated){
+                    const {firstName , lastName , password , location , email , phoneNumber} = req.user;
+                    const adminData = {firstName , lastName , password , location , phoneNumber ,
+                        officialEmail : email};
+                    await adminDatabase.create(adminData);
+                    key.userAssociated = email;
+                    await adminKeyDatabase.findByIdAndUpdate(key._id , key);
+                    return res.status(201).json({
+                        isAdminRegistered : true ,
+                        CODE : "ADMIN_ADDED",
+                        message : "Admin has been added",
+                        adminData
+                    });
+                }else{
+                    return res.status(400).json({
+                        isAdminRegistered : false ,
+                        CODE : "BAD_KEY",
+                        message : "Admin key given to the user is being used by someone else",
+                    });
+                }
+            }else{
+                return res.status(400).json({
+                    isAdminRegistered : false ,
+                    CODE : "KEY_NOT_PRESENT",
+                    message : "Admin key is not present",
+                });
+            }
+        }else{
+            return res.status(403).json({
+                isAdminRegistered : false ,
+                CODE : "NOT_ELIGIBLE",
+                message : "You are not eligible to become an Admin",
+            });
+        }
+    }catch (e) {
+        return res.status(400).json({
+            isAdminRegistered : false ,
+            CODE : "ERROR_OCCURRED",
+            message : "Some error occurred while adding an admin",
+        });
+    }
+}
+
+exports.adminLogin = async (req,res)=>{
+    const admin = await adminDatabase.findOne({officialEmail : req.body.email});
+    if(!admin){
+        return res.status(404).json({
+            userLoggedIn : false ,
+            code : "NOT_FOUND" ,
+            message : "admin with such email does not exist"
+        });
+    }
+    const validatePassword = await bcrypt.compare(req.body.password , admin.password);
+    if(!validatePassword){
+        return res.status(400).json({
+            adminLoggedIn : false ,
+            code : "WRONG_PASSWORD",
+            message : "admin entered password was wrong"
+        });
+    }
+    const token = await jwt.sign({
+        adminID : admin._id,
+        ROLE : "USER"
+    },process.env.JWT_KEY, {
+        expiresIn : "48h"
+    });
+    return res.status(200).header({
+        "Authorization" : token
+    }).json({
+        adminLoggedIn : true ,
+        code : "LOGGED_IN" ,
+        message : "Admin Logged In Successfully"
+    });
+}
+
+exports.deleteJob = async (req,res)=>{
+    try{
+        /*
+         const deletedJob = await jobDatabase.findByIdAndDelete(req.params.jobID);
+         await userAnswersJobDatabase.deleteMany({jobAssociated : req.params.jobID});
+         */
+        const deletedJob = await jobDatabase.findById(req.params._id);
+        const data = {
+            deletedBy : req.user._id,
+            deletedDataType : "JOB",
+            deletedData : deletedJob
+        }
+        await adminLogDatabase.create(data);
+        return res.status(204).json({
+            deletedJob : true ,
+            message : "Job was deleted",
+            data
+        });
+    }catch (e) {
+        return res.status(400).json({
+            deletedJob : false ,
+            message : "Job wasn't deleted"
+        });
+    }
+}
