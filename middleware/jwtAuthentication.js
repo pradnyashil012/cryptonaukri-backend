@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const userDatabase = require("../models/user/userSchema");
 const businessDatabase = require("../models/business/businessSchema");
+const adminDatabase = require("../models/admin/adminSchema");
+
 
 exports.verifyJWT = async (req,res,next)=>{
     const token = req.header("Authorization");
@@ -19,7 +21,7 @@ exports.verifyJWT = async (req,res,next)=>{
     try{
         const jwtVerify = jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY);
         // const endPointAccessed = req.url.split("/")[2];
-        if(jwtVerify.userID){
+        if(jwtVerify.userID && jwtVerify.ROLE === "USER"){
             req.user = await userDatabase.findById(jwtVerify.userID);
             if(req.user.accountDisableDate < Date.now()  ||  req.user.isDisabled){
                 req.user.isDisabled = true;
@@ -30,7 +32,7 @@ exports.verifyJWT = async (req,res,next)=>{
                 });
             }
             next();
-        }else if(jwtVerify.businessID){
+        }else if(jwtVerify.businessID && jwtVerify.ROLE === "BUSINESS"){
             req.user = await businessDatabase.findById(jwtVerify.businessID);
             if(req.user.accountDisableDate < Date.now()){
                 await businessDatabase.findByIdAndUpdate(req.user._id , req.user);
@@ -39,6 +41,9 @@ exports.verifyJWT = async (req,res,next)=>{
                     message : "Account has been disabled(free trial period expired)"
                 });
             }
+            next();
+        }else if(jwtVerify.adminID && jwtVerify.ROLE === "ADMIN"){
+            req.user = await adminDatabase.findById(jwtVerify.adminID);
             next();
         }
     }catch (e) {
