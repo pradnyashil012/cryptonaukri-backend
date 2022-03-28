@@ -167,9 +167,9 @@ exports.businessLogin = async (req,res)=>{
             message : "Account has been disabled(free trial period expired)"
         });
     }
-
     const token = await jwt.sign({
         businessID : business._id,
+        ROLE : "BUSINESS"
     },process.env.JWT_KEY, {
         expiresIn : "48h"
     });
