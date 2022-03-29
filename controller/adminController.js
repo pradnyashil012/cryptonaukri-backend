@@ -91,7 +91,7 @@ exports.adminLogin = async (req,res)=>{
     }
     const token = await jwt.sign({
         adminID : admin._id,
-        ROLE : "USER"
+        ROLE : "ADMIN"
     },process.env.JWT_KEY, {
         expiresIn : "48h"
     });
@@ -106,26 +106,64 @@ exports.adminLogin = async (req,res)=>{
 
 exports.deleteJob = async (req,res)=>{
     try{
-        /*
-         const deletedJob = await jobDatabase.findByIdAndDelete(req.params.jobID);
-         await userAnswersJobDatabase.deleteMany({jobAssociated : req.params.jobID});
-         */
-        const deletedJob = await jobDatabase.findById(req.params._id);
-        const data = {
-            deletedBy : req.user._id,
-            deletedDataType : "JOB",
-            deletedData : deletedJob
-        }
-        await adminLogDatabase.create(data);
-        return res.status(204).json({
-            deletedJob : true ,
-            message : "Job was deleted",
-            data
-        });
+         if(req.user.ROLE === "ADMIN"){
+             const deletedJob = await jobDatabase.findByIdAndDelete(req.params.jobID);
+             await userAnswersJobDatabase.deleteMany({jobAssociated : req.params.jobID});
+             const data = {
+                 deletedBy : req.user._id,
+                 deletedDataType : "JOB",
+                 deletedData : deletedJob,
+                 deletedOn : Date.now()
+             }
+             await adminLogDatabase.create(data);
+             return res.status(204).json({
+                 deletedJob : true ,
+                 message : "Job was deleted",
+                 data
+             });
+         }else{
+             return res.status(403).json({
+                 code : "NOT_ELIGIBLE",
+                 appliedAtJob : false,
+                 message : "You are not eligible to delete the job"
+             });
+         }
     }catch (e) {
         return res.status(400).json({
             deletedJob : false ,
             message : "Job wasn't deleted"
+        });
+    }
+}
+
+exports.deleteInternship = async (req,res)=>{
+    try{
+        if(req.user.ROLE === "ADMIN"){
+            const deletedInternship = await internshipDatabase.findByIdAndDelete(req.params.internshipID);
+            await userAnswersInternshipDatabase.deleteMany({jobAssociated : req.params.internshipID});
+            const data = {
+                deletedBy : req.user._id,
+                deletedDataType : "INTERNSHIP",
+                deletedData : deletedInternship,
+                deletedOn : Date.now()
+            }
+            await adminLogDatabase.create(data);
+            return res.status(204).json({
+                deletedJob : true ,
+                message : "Job was deleted",
+                data
+            });
+        }else{
+            return res.status(403).json({
+                code : "NOT_ELIGIBLE",
+                appliedAtJob : false,
+                message : "You are not eligible to delete the job"
+            });
+        }
+    }catch (e) {
+        return res.status(400).json({
+            deletedJob : false ,
+            message : "Internship wasn't deleted"
         });
     }
 }
