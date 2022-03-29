@@ -14,7 +14,11 @@ exports.sendOTP = async (req,res)=>{
     const userPresenceCheck = await userDatabase.findOne({email : req.query.email});
     if(!userPresenceCheck){
         const transporter = nodemailer.createTransport({
-            service:"gmail",
+            service : "smtp",
+            host : "bh-50.webhostbox.net",
+            name :"bh-50.webhostbox.net",
+            port : 465,
+            secure : true ,
             auth : {
                 user : process.env.EMAIL,
                 pass: process.env.PASSWORD
@@ -53,6 +57,7 @@ exports.sendOTP = async (req,res)=>{
 
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
+                console.log(err);
                 return res.status(400).json({
                     code : "OTP_FAILED",
                     otpSent : false,
@@ -213,7 +218,11 @@ exports.forgetPasswordOTP = async (req,res)=>{
     const user = await userDatabase.findOne({email : req.query.email});
     if(user){
         const transporter = nodemailer.createTransport({
-            service:"gmail",
+            service : "smtp",
+            host : "bh-50.webhostbox.net",
+            name :"bh-50.webhostbox.net",
+            port : 465,
+            secure : true ,
             auth : {
                 user : process.env.EMAIL,
                 pass: process.env.PASSWORD
