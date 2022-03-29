@@ -19,7 +19,7 @@ exports.verifyJWT = async (req,res,next)=>{
         });
     }
     try{
-        const jwtVerify = jwt.verify(token.substring(7,token.length) , process.env.JWT_KEY);
+        const jwtVerify = jwt.verify(token.substring(7,token.length),process.env.JWT_KEY);
         // const endPointAccessed = req.url.split("/")[2];
         if(jwtVerify.userID && jwtVerify.ROLE === "USER"){
             req.user = await userDatabase.findById(jwtVerify.userID);
