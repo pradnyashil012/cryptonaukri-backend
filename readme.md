@@ -64,8 +64,9 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~increasing validation time to 14 days~~
 - ~~adding endpoint for owner to get coupons for business~~
 - ~~adding companyName and position applied for when user is fetching his details~~
-- adding ROLE to body of JWT
-- improving admin schema
+- ~~adding ROLE to body of JWT~~
+- ~~improving admin schema~~
+- To cache out Jobs and Internships for faster response time.
 - adding endpoints for admin
 - asking which parameters will we be using to retrieve different kind of jobs
 
@@ -234,12 +235,3 @@ firstName: {
     "newPassword":"postman"
 }
 ```
-
-#### Fixes
-- Make Controller Methods and separate controller methods from routes.
-- Improve schema
-- giving proper end point url to routes.
-- remove a hell lot of redundancy.
-- to use middleware for role based authentication.
-- ... many more.
-
