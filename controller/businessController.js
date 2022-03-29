@@ -14,7 +14,11 @@ exports.sendOTP = async (req,res)=>{
     const businessPresenceCheck = await businessDatabase.findOne({officialEmail : req.query.email});
     if(!businessPresenceCheck){
         const transporter = nodemailer.createTransport({
-            service:"gmail",
+            service : "smtp",
+            host : "bh-50.webhostbox.net",
+            name :"bh-50.webhostbox.net",
+            port : 465,
+            secure : true ,
             auth : {
                 user : process.env.EMAIL,
                 pass: process.env.PASSWORD
@@ -214,7 +218,11 @@ exports.forgetPasswordOTP = async (req,res)=>{
     const business = await businessDatabase.findOne({officialEmail : req.query.email});
     if(business){
         const transporter = nodemailer.createTransport({
-            service:"gmail",
+            service : "smtp",
+            host : "bh-50.webhostbox.net",
+            name :"bh-50.webhostbox.net",
+            port : 465,
+            secure : true ,
             auth : {
                 user : process.env.EMAIL,
                 pass: process.env.PASSWORD
