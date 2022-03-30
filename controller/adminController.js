@@ -167,3 +167,5 @@ exports.deleteInternship = async (req,res)=>{
         });
     }
 }
+
+
