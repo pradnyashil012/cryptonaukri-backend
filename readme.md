@@ -67,7 +67,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~adding ROLE to body of JWT~~
 - ~~improving admin schema~~
 - To cache out Jobs and Internships for faster response time.
-- adding endpoints for admin
+- ~~adding endpoints for admin~~
+- adding feature which will allow admin to enable business and users after their free trial is over.
 - asking which parameters will we be using to retrieve different kind of jobs
 
 ## Responses :
