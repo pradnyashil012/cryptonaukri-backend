@@ -26,6 +26,10 @@ const Schema = new mongoose.Schema({
         type : String ,
         default : null
     },
+    isDisabled : {
+        type : Boolean ,
+        default : false
+    },
     appliedOn : {
         type : Date ,
         default : Date.now()
