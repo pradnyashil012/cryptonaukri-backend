@@ -33,7 +33,7 @@ exports.postJob = async (req,res)=>{
 }
 
 exports.findJobs = async (req,res)=>{
-    const data = await jobsDatabase.find({});
+    const data = await jobsDatabase.find({isDisabled : false});
     return res.status(200).json({
         code : "JOBS_FOUND",
         data
