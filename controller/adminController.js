@@ -222,3 +222,29 @@ exports.increaseValidity = async (req,res)=>{
         });
     }
 }
+
+exports.adminDashBoardData = async (req,res)=>{
+    if(req.user.ROLE === "ADMIN"){
+        try{
+            const jobsData = await jobDatabase.find({});
+            const internshipData =  await internshipDatabase.find({});
+            const users = await userDatabase.find({});
+            const businesses = await businessDatabase.find({});
+            return res.status(200).json({
+                code : "DATA",
+                data : {
+                    jobsData , internshipData , users ,businesses
+                }
+            });
+        }catch (e) {
+            return res.status(400).json({
+                message : "There was some error while fetching the data"
+            });
+        }
+    }else{
+        return res.status(403).json({
+            code : "NOT_ELIGIBLE",
+            message : "You are not eligible to perform this task"
+        });
+    }
+}
