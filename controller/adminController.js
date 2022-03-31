@@ -1,6 +1,7 @@
 const adminDatabase = require("../models/admin/adminSchema");
 const adminKeyDatabase = require("../models/admin/adminKey");
 const userDatabase = require("../models/user/userSchema");
+const businessDatabase = require("../models/business/businessSchema");
 const jobDatabase = require("../models/business/jobSchema");
 const internshipDatabase = require("../models/business/internshipSchema");
 const userAnswersJobDatabase = require("../models/user/userAnswersModel");
@@ -167,5 +168,56 @@ exports.deleteInternship = async (req,res)=>{
         });
     }
 }
-
-
+exports.increaseValidity = async (req,res)=>{
+    if(req.user === "ADMIN"){
+        try{
+            if(req.query.accountType==="business"){
+                const businessToIncreaseValidity = await businessDatabase.findById(req.query.businessID);
+                businessToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
+                businessToIncreaseValidity.isDisabled = false;
+                const updatedBusiness = await businessDatabase.findByIdAndUpdate(req.query.businessID , businessToIncreaseValidity , {new : true});
+                await adminLogDatabase.create({
+                    extendedBy : req.user._id,
+                    extendedDataType : "JOB",
+                    extendedData : updatedBusiness ,
+                    extendedOn : Date.now()
+                });
+                return res.status(200).json({
+                    message : "Disable Date Updated",
+                    code : "DETAIL_UPDATED",
+                    detailsUpdated : true ,
+                    data : updatedBusiness
+                });
+            }else if(req.query.accountType==="user"){
+                const userToIncreaseValidity = await userDatabase.findById(req.query.userID);
+                userToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
+                userToIncreaseValidity.isDisabled = false;
+                const updatedUser = await businessDatabase.findByIdAndUpdate(req.query.businessID , userToIncreaseValidity , {new : true});
+                await adminLogDatabase.create({
+                    extendedBy : req.user._id,
+                    extendedDataType : "USER",
+                    extendedData : updatedUser ,
+                    extendedOn : Date.now()
+                });
+                return res.status(200).json({
+                    message : "Disable Date Updated",
+                    code : "DETAIL_UPDATED",
+                    detailsUpdated : true ,
+                    data : updatedUser
+                });
+            }
+        }catch (e) {
+            return res.status(400).json({
+                message : "some error occurred while updating the data ",
+                code : "UPDATE_FAILED",
+                detailsUpdated : false
+            });
+        }
+    }else{
+        return res.status(403).json({
+            code : "NOT_ELIGIBLE",
+            detailsUpdated : false,
+            message : "You are not eligible to perform this task"
+        });
+    }
+}
