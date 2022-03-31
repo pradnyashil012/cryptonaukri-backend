@@ -49,6 +49,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - /deleteJob/:jobID = To Delete Job [DELETE]
 - /deleteInternship/:internshipID = To delete Internship [DELETE]
 - /validity?accountType=user/business & email=id =  To extend the date of  account expiration. [POST]
+- /fetchAdminLogs = to fetch admin logs [GET]
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
