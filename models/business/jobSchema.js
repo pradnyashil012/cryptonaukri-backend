@@ -108,8 +108,11 @@ const Schema = new mongoose.Schema({
     },
     status: {
         type: String,
+    },
+    isDisabled : {
+        type : Boolean ,
+        default : false
     }
 });
 
 module.exports = mongoose.model("jobSchema",Schema);
-//6230a477fe7cf52e12a9f8e3
