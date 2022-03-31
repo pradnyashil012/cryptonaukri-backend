@@ -1,5 +1,5 @@
 # Cryptonaukri Backend 
-Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
+Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 
 ## End Points : 
 #### User Routes
@@ -73,7 +73,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~adding feature which will allow admin to enable business and users after their free trial is over.~~
 - asking which parameters will we be using to retrieve different kind of jobs
 - ~~adding endpoint which will allow admin to increase the date of expiration of user and business.~~
-- 
+- Fetching Business Details and User Details for admin
 
 ## Responses :
 #### - OTP :
