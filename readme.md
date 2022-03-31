@@ -48,7 +48,7 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - /signup?key=adminKey = For admin signup (Pass User JWT) [POST]
 - /deleteJob/:jobID = To Delete Job [DELETE]
 - /deleteInternship/:internshipID = To delete Internship [DELETE]
-- /validity?accountType=user/business&userID= id OR businessID=id =  To extend the date of  account expiration. [POST]
+- /validity?accountType=user/business & email=id =  To extend the date of  account expiration. [POST]
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
@@ -70,9 +70,9 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~improving admin schema~~
 - To cache out Jobs and Internships for faster response time.
 - ~~adding endpoints for admin~~
-- adding feature which will allow admin to enable business and users after their free trial is over.
+- ~~adding feature which will allow admin to enable business and users after their free trial is over.~~
 - asking which parameters will we be using to retrieve different kind of jobs
-- adding endpoint which will allow admin to increase the date of expiration of user and business.
+- ~~adding endpoint which will allow admin to increase the date of expiration of user and business.~~
 - 
 
 ## Responses :
