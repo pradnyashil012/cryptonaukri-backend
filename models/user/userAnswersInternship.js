@@ -22,6 +22,10 @@ const Schema = new mongoose.Schema({
         internshipTitle : String ,
         responsibilities: String ,
     },
+    isDisabled : {
+        type : Boolean ,
+        default : false
+    },
     candidateAvailability : {
         type : String ,
         default : null
