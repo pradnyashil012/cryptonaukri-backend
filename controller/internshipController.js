@@ -31,7 +31,7 @@ exports.postInternship = async (req,res)=>{
     }
 }
 exports.findInternships = async (req,res)=>{
-    const data = await internshipDatabase.find({});
+    const data = await internshipDatabase.find({isDisabled : false});
     return res.status(200).json({
         code : "INTERNSHIP_FOUND",
         data
