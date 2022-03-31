@@ -169,13 +169,13 @@ exports.deleteInternship = async (req,res)=>{
     }
 }
 exports.increaseValidity = async (req,res)=>{
-    if(req.user === "ADMIN"){
+    if(req.user.ROLE === "ADMIN"){
         try{
             if(req.query.accountType==="business"){
-                const businessToIncreaseValidity = await businessDatabase.findById(req.query.businessID);
+                const businessToIncreaseValidity = await businessDatabase.findOne({officialEmail : req.query.email});
                 businessToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
                 businessToIncreaseValidity.isDisabled = false;
-                const updatedBusiness = await businessDatabase.findByIdAndUpdate(req.query.businessID , businessToIncreaseValidity , {new : true});
+                const updatedBusiness = await businessDatabase.findByIdAndUpdate(businessToIncreaseValidity._id , businessToIncreaseValidity , {new : true});
                 await adminLogDatabase.create({
                     extendedBy : req.user._id,
                     extendedDataType : "JOB",
@@ -189,10 +189,10 @@ exports.increaseValidity = async (req,res)=>{
                     data : updatedBusiness
                 });
             }else if(req.query.accountType==="user"){
-                const userToIncreaseValidity = await userDatabase.findById(req.query.userID);
-                userToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
+                const userToIncreaseValidity = await userDatabase.findOne({email : req.query.email});
+                userToIncreaseValidity.accountDisableDate = Date.now() + 7*24*60*60*1000;
                 userToIncreaseValidity.isDisabled = false;
-                const updatedUser = await businessDatabase.findByIdAndUpdate(req.query.businessID , userToIncreaseValidity , {new : true});
+                const updatedUser = await userDatabase.findByIdAndUpdate(userToIncreaseValidity._id , userToIncreaseValidity , {new : true});
                 await adminLogDatabase.create({
                     extendedBy : req.user._id,
                     extendedDataType : "USER",
@@ -207,6 +207,7 @@ exports.increaseValidity = async (req,res)=>{
                 });
             }
         }catch (e) {
+            console.log(e);
             return res.status(400).json({
                 message : "some error occurred while updating the data ",
                 code : "UPDATE_FAILED",
