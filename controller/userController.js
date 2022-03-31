@@ -164,7 +164,7 @@ exports.userLogin = async (req,res)=>{
             message : "user's entered password was wrong"
         });
     }
-    if(user.accountDisableDate < Date.now()){
+    if(user.accountDisableDate < Date.now() && !user.isDisabled){
         return res.status(400).json({
             code : "INVALID",
             userLoggedIn : false,
@@ -219,9 +219,9 @@ exports.forgetPasswordOTP = async (req,res)=>{
     if(user){
         const transporter = nodemailer.createTransport({
             service : "smtp",
-            host : "bh-50.webhostbox.net",
-            name :"bh-50.webhostbox.net",
-            port : 465,
+            host : process.env.EMAIL_HOST,
+            name : process.env.EMAIL_NAME,
+            port : process.env.EMAIL_PORT,
             secure : true ,
             auth : {
                 user : process.env.EMAIL,
@@ -327,14 +327,22 @@ exports.userDetails = async (req,res)=>{
         user =await userDatabase.findOne({email:req.query.email});
     }
     if(user){
-        const {firstName , lastName , email , phoneNumber , location } = user;
-        const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
-        return res.status(200).json({
-            userFound : true ,
-            details : {
-                firstName, lastName, email , phoneNumber , location , userResume
-            }
-        });
+        if(user.isDisabled){
+            return res.status(400).json({
+                userFound : true ,
+                details : null ,
+                message : "User account has been disabled"
+            });
+        }else{
+            const {firstName , lastName , email , phoneNumber , location } = user;
+            const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
+            return res.status(200).json({
+                userFound : true ,
+                details : {
+                    firstName, lastName, email , phoneNumber , location , userResume
+                }
+            });
+        }
     }else{
         return res.status(400).json({
             userFound : false ,
@@ -365,9 +373,9 @@ exports.loggedInUserDetails = async (req,res)=>{
         try{
             const {firstName , lastName , email , phoneNumber , password , location ,
                 dateOfJoining , ROLE , couponCode , accountDisableDate , _id}  = await userDatabase.findById(req.user._id);
-            const appliedAtJobs = await userAnswersDatabase.find({userAssociated: req.user._id});
+            const appliedAtJobs = await userAnswersDatabase.find({userAssociated: req.user._id , isDisabled : false});
             const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
-            const appliedAtInternships = await userAnswersInternshipDatabase.find({userAssociated : req.user._id});
+            const appliedAtInternships = await userAnswersInternshipDatabase.find({userAssociated : req.user._id , isDisabled : false});
 
             return res.status(200).json({firstName , lastName , email , phoneNumber , password , location , dateOfJoining
                 , ROLE , couponCode , accountDisableDate , _id , appliedAtInternships, appliedAtJobs , userResume});
