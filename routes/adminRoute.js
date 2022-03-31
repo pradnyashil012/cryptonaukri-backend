@@ -1,5 +1,5 @@
 const express = require("express");
-const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity} = require("../controller/adminController");
+const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity, fetchAdminLogs} = require("../controller/adminController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const router = express.Router();
 
@@ -13,5 +13,7 @@ router.route("/owner")
     .post(ownerAdminKeyGeneration);
 router.route("/deleteJob/:jobID")
     .delete(verifyJWT,deleteJob);
+router.route("/fetchlogs")
+    .get(fetchAdminLogs);
 
 module.exports = router;
