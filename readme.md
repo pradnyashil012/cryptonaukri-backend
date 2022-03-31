@@ -44,9 +44,11 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - **/findInternship/:internshipID** = To find a specific Internship
 
 #### Admin [/api/v1/admin]
-- /login = For Admin Login
-- /signup?key=adminKey = For admin signup (Pass User JWT)
-- /deleteJob/:jobID = To Delete Job 
+- /login = For Admin Login [POST]
+- /signup?key=adminKey = For admin signup (Pass User JWT) [POST]
+- /deleteJob/:jobID = To Delete Job [DELETE]
+- /deleteInternship/:internshipID = To delete Internship [DELETE]
+- /validity?accountType=user/business&userID= id OR businessID=id =  To extend the date of  account expiration. [POST]
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
@@ -70,6 +72,8 @@ Test Server Link : `https://cryptonaukribackend.herokuapp.com/`
 - ~~adding endpoints for admin~~
 - adding feature which will allow admin to enable business and users after their free trial is over.
 - asking which parameters will we be using to retrieve different kind of jobs
+- adding endpoint which will allow admin to increase the date of expiration of user and business.
+- 
 
 ## Responses :
 #### - OTP :
