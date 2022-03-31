@@ -71,6 +71,10 @@ const Schema = new mongoose.Schema({
     status: {
         type: String,
     },
+    isDisabled : {
+        type : Boolean ,
+        default : false
+    }
 });
 
 module.exports = mongoose.model("internshipSchema",Schema);
