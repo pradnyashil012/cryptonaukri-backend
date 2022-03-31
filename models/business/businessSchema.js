@@ -45,6 +45,10 @@ const Schema = new mongoose.Schema({
         type : String ,
         default : "BUSINESS"
     },
+    isDisabled : {
+      type : Boolean ,
+      default : false
+    },
     accountDisableDate : {
         type : Date ,
         default : Date.now() + 28 * 24 * 60 * 60 * 1000
