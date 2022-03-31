@@ -114,7 +114,7 @@ exports.deleteJob = async (req,res)=>{
                  deletedBy : req.user._id,
                  deletedDataType : "JOB",
                  deletedData : deletedJob,
-                 deletedOn : Date.now()
+                 deletedOn : new Date(Date.now())
              }
              await adminLogDatabase.create(data);
              return res.status(204).json({
@@ -146,7 +146,7 @@ exports.deleteInternship = async (req,res)=>{
                 deletedBy : req.user._id,
                 deletedDataType : "INTERNSHIP",
                 deletedData : deletedInternship,
-                deletedOn : Date.now()
+                deletedOn : new Date(Date.now())
             }
             await adminLogDatabase.create(data);
             return res.status(204).json({
@@ -180,7 +180,7 @@ exports.increaseValidity = async (req,res)=>{
                     extendedBy : req.user._id,
                     extendedDataType : "JOB",
                     extendedData : updatedBusiness ,
-                    extendedOn : Date.now()
+                    extendedOn : new Date(Date.now())
                 });
                 return res.status(200).json({
                     message : "Disable Date Updated",
@@ -197,7 +197,7 @@ exports.increaseValidity = async (req,res)=>{
                     extendedBy : req.user._id,
                     extendedDataType : "USER",
                     extendedData : updatedUser ,
-                    extendedOn : Date.now()
+                    extendedOn : new Date(Date.now())
                 });
                 return res.status(200).json({
                     message : "Disable Date Updated",
@@ -245,6 +245,19 @@ exports.adminDashBoardData = async (req,res)=>{
         return res.status(403).json({
             code : "NOT_ELIGIBLE",
             message : "You are not eligible to perform this task"
+        });
+    }
+}
+
+exports.fetchAdminLogs = async (req,res)=>{
+    if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
+        const adminData = await adminLogDatabase.find({});
+        return res.status(201).json({
+            adminData
+        });
+    }else{
+        return res.status(403).json({
+            message : "Sorry You are not authorized to access this endpoint"
         });
     }
 }
