@@ -8,6 +8,8 @@ const jobsDatabase = require("../models/business/jobSchema");
 const internshipDatabase = require("../models/business/internshipSchema");
 const businessCouponDatabase = require("../models/businessCouponModel");
 const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
+const jobAnswersDatabase = require("../models/user/userAnswersModel");
+const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -15,9 +17,9 @@ exports.sendOTP = async (req,res)=>{
     if(!businessPresenceCheck){
         const transporter = nodemailer.createTransport({
             service : "smtp",
-            host : "bh-50.webhostbox.net",
-            name :"bh-50.webhostbox.net",
-            port : 465,
+            host : process.env.EMAIL_HOST,
+            name :process.env.EMAIL_NAME,
+            port : process.env.EMAIL_PORT,
             secure : true ,
             auth : {
                 user : process.env.EMAIL,
@@ -165,12 +167,42 @@ exports.businessLogin = async (req,res)=>{
             message : "business's entered password was wrong"
         });
     }
-    if(business.accountDisableDate < Date.now()){
+    if(business.accountDisableDate < Date.now() && !business.isDisabled){
+        business.isDisabled = true;
+        await businessDatabase.findByIdAndUpdate(business._id , business);
+        const jobs = await jobsDatabase.find({postedBy : business._id});
+        await asyncForEach(jobs , async (val)=>{
+            val.isDisabled = true;
+            const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
+            userAnswers.forEach(data =>{
+                data.isDisabled = true;
+            });
+            await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+        });
+        await jobsDatabase.updateMany({postedBy : business._id},jobs);
+        const internships = await internshipDatabase.find({postedBy : business._id});
+        await asyncForEach(internships , async (val)=>{
+            val.isDisabled = true;
+            const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
+            userAnswers.forEach(data =>{
+                data.isDisabled = true;
+            });
+            await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+        });
+        await internshipDatabase.updateMany({postedBy : business._id} , internships);
+
         return res.status(400).json({
             code : "INVALID",
             message : "Account has been disabled(free trial period expired)"
         });
     }
+    if(business.isDisabled){
+        return res.status(400).json({
+            code : "INVALID",
+            message : "Account has been disabled(free trial period expired)"
+        });
+    }
+
     const token = await jwt.sign({
         businessID : business._id,
         ROLE : "BUSINESS"
@@ -378,5 +410,9 @@ exports.ownerOTPGeneration = async (req,res)=>{
 }
 
 
-
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
 
