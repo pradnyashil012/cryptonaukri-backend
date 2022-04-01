@@ -52,7 +52,14 @@ const schema = new mongoose.Schema({
     projects: [projectSubSchema],
     skills: [{
         type: String
-    }]
+    }],
+    links : {
+        github : String ,
+        linkedin : String ,
+        otherLinks : [{
+            type : String
+        }]
+    }
 });
 
 module.exports = mongoose.model("userResume",schema);
