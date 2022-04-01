@@ -3,12 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Redis = require("ioredis");
-const redisClient = new Redis(process.env.REDIS);
 const couponDatabase = require("../models/couponModel");
 const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 const userAnswersDatabase = require("../models/user/userAnswersModel");
 const userResumeDatabase = require("../models/user/userResumeSchema");
 const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
+const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
+const redisClient = new Redis(process.env.REDIS);
+const mongoose = require("mongoose");
+
 
 exports.sendOTP = async (req,res)=>{
     const userPresenceCheck = await userDatabase.findOne({email : req.query.email});
@@ -115,13 +118,16 @@ exports.userSignup = async (req,res)=>{
                  */
                 userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
-                    await userDatabase.create(userDataToBeSaved);
+                    const user = await userDatabase.create(userDataToBeSaved);
+                    const {_id , firstName , lastName , email , phoneNumber , location , isDisabled , ROLE } = user;
+                    await communityDBUserDatabase.create({_id , firstName , lastName , email , location ,phoneNumber ,isDisabled ,ROLE});
                     return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
                         message : "user has been added successfully"
                     });
                 }catch (error) {
+                    console.log(error);
                     // Need to make this error more specific.
                     return res.status(400).json({
                         code : "DUPLICATE",
