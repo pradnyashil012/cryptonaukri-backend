@@ -49,7 +49,9 @@ exports.verifyJWT = async (req,res,next)=>{
             next();
         }else if(jwtVerify.businessID && jwtVerify.ROLE === "BUSINESS"){
             req.user = await businessDatabase.findById(jwtVerify.businessID);
+
             if(!req.user.isDisabled && req.user.accountDisableDate < Date.now()){
+
                 req.user.isDisabled = true;
                 await businessDatabase.findByIdAndUpdate(req.user._id , req.user);
                 const jobs = await jobsDatabase.find({postedBy : req.user._id});
