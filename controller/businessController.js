@@ -251,9 +251,9 @@ exports.forgetPasswordOTP = async (req,res)=>{
     if(business){
         const transporter = nodemailer.createTransport({
             service : "smtp",
-            host : "bh-50.webhostbox.net",
-            name :"bh-50.webhostbox.net",
-            port : 465,
+            host : process.env.EMAIL_HOST,
+            name :process.env.EMAIL_NAME,
+            port : process.env.EMAIL_PORT,
             secure : true ,
             auth : {
                 user : process.env.EMAIL,
