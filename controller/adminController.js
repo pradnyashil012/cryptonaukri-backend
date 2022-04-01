@@ -10,6 +10,9 @@ const adminLogDatabase = require("../models/admin/adminLogs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const keyGeneration = require("../utils/adminKeyGeneration");
+const jobsDatabase = require("../models/business/jobSchema");
+const jobAnswersDatabase = require("../models/user/userAnswersModel");
+const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
 
 exports.ownerAdminKeyGeneration = async (req,res)=>{
     if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
@@ -174,14 +177,40 @@ exports.increaseValidity = async (req,res)=>{
             if(req.query.accountType==="business"){
                 const businessToIncreaseValidity = await businessDatabase.findOne({officialEmail : req.query.email});
                 businessToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
+
+                if(businessToIncreaseValidity.isDisabled){
+                    const jobs = await jobsDatabase.find({postedBy : businessToIncreaseValidity._id});
+                    await asyncForEach(jobs , async (val)=>{
+                        val.isDisabled = false;
+                        const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
+                        userAnswers.forEach(data =>{
+                            data.isDisabled = false;
+                        });
+                        await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+                    });
+                    await jobsDatabase.updateMany({postedBy : businessToIncreaseValidity._id},jobs);
+                    const internships = await internshipDatabase.find({postedBy : businessToIncreaseValidity._id});
+                    await asyncForEach(internships , async (val)=>{
+                        val.isDisabled = false;
+                        const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
+                        userAnswers.forEach(data =>{
+                            data.isDisabled = false;
+                        });
+                        await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+                    });
+                    await internshipDatabase.updateMany({postedBy : businessToIncreaseValidity._id} , internships);
+                }
+
                 businessToIncreaseValidity.isDisabled = false;
                 const updatedBusiness = await businessDatabase.findByIdAndUpdate(businessToIncreaseValidity._id , businessToIncreaseValidity , {new : true});
+
                 await adminLogDatabase.create({
                     extendedBy : req.user._id,
                     extendedDataType : "JOB",
                     extendedData : updatedBusiness ,
                     extendedOn : new Date(Date.now())
                 });
+
                 return res.status(200).json({
                     message : "Disable Date Updated",
                     code : "DETAIL_UPDATED",
@@ -259,5 +288,11 @@ exports.fetchAdminLogs = async (req,res)=>{
         return res.status(403).json({
             message : "Sorry You are not authorized to access this endpoint"
         });
+    }
+}
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
     }
 }
