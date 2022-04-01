@@ -74,7 +74,8 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - ~~adding feature which will allow admin to enable business and users after their free trial is over.~~
 - asking which parameters will we be using to retrieve different kind of jobs
 - ~~adding endpoint which will allow admin to increase the date of expiration of user and business.~~
-- Fetching Business Details and User Details for admin
+- ~~Fetching Business Details and User Details for admin~~
+- ~~adding exact user details for new database during signup for community purpose~~ 
 
 ## Responses :
 #### - OTP :
