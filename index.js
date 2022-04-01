@@ -5,6 +5,7 @@ dotenv.config({
     path : "./configuration/config.env"
 });
 const database = require("./configuration/databaseConfig");
+const database2 = require("./configuration/secondDatabaseConfig");
 const cors = require("./middleware/cors");
 
 //Routes Import
@@ -29,6 +30,10 @@ app.use("/api/v1/admin",adminRoute);
 database()
     .then(()=>console.log("Connected To Database"))
     .catch(()=>console.log("Connection To Database Failed"));
+
+database2()
+    .then(()=>console.log("Connected To Second Database"))
+    .catch(()=>console.log("Connection To Second Database Failed"));
 
 
 const PORT = process.env.PORT || 8000;
