@@ -399,3 +399,21 @@ exports.loggedInUserDetails = async (req,res)=>{
         });
     }
 }
+
+exports.userResumeUpdate = async (req,res)=>{
+    try {
+        const updatedResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+        return res.status(200).json({
+            message : "User Resume updated",
+            code : "RESUME_UPDATED",
+            isResumeUpdated : true,
+            data : updatedResume
+        });
+    }catch (e) {
+        return res.status(400).json({
+            message : "User Resume update failed",
+            code : "RESUME_UPDATED_FAILED",
+            isResumeUpdated : false
+        });
+    }
+}
