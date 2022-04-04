@@ -10,6 +10,7 @@ const businessCouponDatabase = require("../models/businessCouponModel");
 const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
 const jobAnswersDatabase = require("../models/user/userAnswersModel");
 const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
+const userDatabase = require("../models/user/userSchema");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -405,6 +406,24 @@ exports.ownerOTPGeneration = async (req,res)=>{
     }else{
         return res.status(403).json({
             message : "Sorry You are not authorized to access this endpoint"
+        });
+    }
+}
+
+exports.businessProfileUpdate = async (req,res)=>{
+    try{
+        const updatedBusinessProfile = await businessDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});
+        return res.status(200).json({
+            message : "Business Profile updated",
+            code : "BUSINESS_PROFILE_UPDATED",
+            isProfileUpdated : true,
+            data : updatedBusinessProfile
+        });
+    }catch (e) {
+        return res.status(400).json({
+            message : "Business Profile update failed",
+            code : "PROFILE_UPDATE_FAILED",
+            isProfileUpdated : false
         });
     }
 }
