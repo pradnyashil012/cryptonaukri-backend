@@ -354,7 +354,7 @@ exports.userDetails = async (req,res)=>{
             return res.status(400).json({
                 userFound : false ,
                 details : null ,
-                message : "No user is associated with this email ID"
+                message : "No user is associated with this  ID"
             });
         }
     }catch (e) {
@@ -410,7 +410,7 @@ exports.loggedInUserDetails = async (req,res)=>{
 
 exports.userResumeUpdate = async (req,res)=>{
     try {
-        const updatedResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+        const updatedResume = await userResumeDatabase.findOneAndUpdate({userAssociated : req.user._id},req.body,{new : true});
         return res.status(200).json({
             message : "User Resume updated",
             code : "RESUME_UPDATED",
@@ -420,8 +420,28 @@ exports.userResumeUpdate = async (req,res)=>{
     }catch (e) {
         return res.status(400).json({
             message : "User Resume update failed",
-            code : "RESUME_UPDATED_FAILED",
+            code : "RESUME_UPDATE_FAILED",
             isResumeUpdated : false
+        });
+    }
+}
+
+
+exports.userProfileUpdate = async (req,res)=>{
+    try{
+        const updatedUserProfile = await userDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});
+        return res.status(200).json({
+            message : "User Resume updated",
+            code : "RESUME_UPDATED",
+            isProfileUpdated : true,
+            data : updatedUserProfile
+        });
+
+    }catch (e) {
+        return res.status(400).json({
+            message : "User Profile update failed",
+            code : "PROFILE_UPDATE_FAILED",
+            isProfileUpdated : false
         });
     }
 }
