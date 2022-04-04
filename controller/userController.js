@@ -326,34 +326,42 @@ exports.forgetPassword = async (req,res)=>{
 }
 
 exports.userDetails = async (req,res)=>{
-    let user ;
-    if(req.query.userID){
-        user = await userDatabase.findById(req.query.userID);
-    }else if(req.query.email){
-        user =await userDatabase.findOne({email:req.query.email});
-    }
-    if(user){
-        if(user.isDisabled){
-            return res.status(400).json({
-                userFound : true ,
-                details : null ,
-                message : "User account has been disabled"
-            });
+    try{
+        let user ;
+        if(req.query.userID){
+            user = await userDatabase.findById(req.query.userID);
+        }else if(req.query.email){
+            user =await userDatabase.findOne({email:req.query.email});
+        }
+        if(user){
+            if(user.isDisabled){
+                return res.status(400).json({
+                    userFound : true ,
+                    details : null ,
+                    message : "User account has been disabled"
+                });
+            }else{
+                const {firstName , lastName , email , phoneNumber , location } = user;
+                const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
+                return res.status(200).json({
+                    userFound : true ,
+                    details : {
+                        firstName, lastName, email , phoneNumber , location , userResume
+                    }
+                });
+            }
         }else{
-            const {firstName , lastName , email , phoneNumber , location } = user;
-            const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
-            return res.status(200).json({
-                userFound : true ,
-                details : {
-                    firstName, lastName, email , phoneNumber , location , userResume
-                }
+            return res.status(400).json({
+                userFound : false ,
+                details : null ,
+                message : "No user is associated with this email ID"
             });
         }
-    }else{
+    }catch (e) {
         return res.status(400).json({
             userFound : false ,
             details : null ,
-            message : "No user is associated with this email ID"
+            message : "Some error occurred while fetching the user"
         });
     }
 }
