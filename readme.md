@@ -14,6 +14,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 **- /api/v1/user/loggedInUserDetails** : To get details of logged in user [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]
 **- /api/v1/user/addResume** : To add user resume (pass in jwt)  
 **- /api/v1/user/updateResume** : To Update user Resume (Pass in JWT) [PUT]
+**- /api/v1/user/updateProfile** : To Update user Profile (Pass in JWT) [PUT]
 
 #### Business Routes [/api/v1/business]
 **- /signup?coupon=coupon:** To add user to database.   
@@ -25,6 +26,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 **- /businessDetails?email=emailOfUser :** To get Business details (contains minimal info about user) [SUBJECT TO CHANGE IN FUTURE]   
 **- /loggedInBusinessDetails** : To get details of logged-in Business [Pass in JWT] (contains all the user info ) [SUBJECT TO CHANGE IN FUTURE]   
 **- /owner** : To get coupon of for business sign-up.
+**- /updateProfile** : To Update Business Profile (Pass in JWT) [PUT]
 ```
 {
     "username":"cryptonaukri_owner",
