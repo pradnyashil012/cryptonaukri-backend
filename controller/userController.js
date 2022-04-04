@@ -8,7 +8,7 @@ const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 const userAnswersDatabase = require("../models/user/userAnswersModel");
 const userResumeDatabase = require("../models/user/userResumeSchema");
 const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
-const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
+// const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
 const redisClient = new Redis(process.env.REDIS);
 const mongoose = require("mongoose");
 
@@ -118,9 +118,9 @@ exports.userSignup = async (req,res)=>{
                  */
                 userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
-                    const user = await userDatabase.create(userDataToBeSaved);
-                    const {_id , firstName , lastName , email , phoneNumber , location , isDisabled , ROLE } = user;
-                    await communityDBUserDatabase.create({_id , firstName , lastName , email , location ,phoneNumber ,isDisabled ,ROLE});
+                    await userDatabase.create(userDataToBeSaved);
+                    // const {_id , firstName , lastName , email , phoneNumber , location , isDisabled , ROLE } = user;
+                    // await communityDBUserDatabase.create({_id , firstName , lastName , email , location ,phoneNumber ,isDisabled ,ROLE});
                     return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
