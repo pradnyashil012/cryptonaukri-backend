@@ -256,15 +256,16 @@ exports.increaseValidity = async (req,res)=>{
 exports.adminDashBoardData = async (req,res)=>{
     if(req.user.ROLE === "ADMIN"){
         try{
-            const jobsData = await jobDatabase.find({});
+            const jobsData = await jobDatabase.find({hasBeenApproved : true});
             const jobsToApprove = await jobsDatabase.find({hasBeenApproved : false });
-            const internshipData =  await internshipDatabase.find({});
+            const internshipData =  await internshipDatabase.find({hasBeenApproved : true});
+            const internshipsToApprove = await internshipDatabase.find({hasBeenApproved : false});
             const users = await userDatabase.find({});
             const businesses = await businessDatabase.find({});
             return res.status(200).json({
                 code : "DATA",
                 data : {
-                    jobsData , internshipData , users ,businesses , jobsToApprove
+                    jobsData , internshipData , users ,businesses , jobsToApprove , internshipsToApprove
                 }
             });
         }catch (e) {
@@ -339,6 +340,55 @@ exports.jobApprovalPart = async (req,res)=>{
         });
     }
 }
+
+
+exports.internshipApprovalPart = async (req,res)=>{
+    try{
+        const internshipDataApproved = await jobDatabase.findByIdAndUpdate(req.params.internshipID ,
+            {hasBeenApproved : true} , {new : true});
+        await adminLogDatabase.create({
+            approvedBy : req.user._id,
+            extendedData : internshipDataApproved._id ,
+            extendedOn : new Date(Date.now())
+        });
+
+        const transporter = nodemailer.createTransport({
+            service : "smtp",
+            host : process.env.EMAIL_HOST,
+            name :process.env.EMAIL_NAME,
+            port : process.env.EMAIL_PORT,
+            secure : true ,
+            auth : {
+                user : process.env.EMAIL,
+                pass: process.env.PASSWORD
+            }
+        });
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: internshipDataApproved.postedByDetails.officialEmail,
+            subject: 'Internship Approved',
+            html: `
+               <h4>Hey There , ${internshipDataApproved.postedByDetails.executiveName}</h4>
+               <h4>The Job(${internshipDataApproved.internshipTitle}) which you posted has been approved</h4>
+            `
+        }
+        transporter.sendMail(mailOptions,(err,data)=>{
+            if(err)
+                console.log(err);
+        });
+        return res.status(200).json({
+            code : "Internship approved",
+            message : "Internship has been approved",
+            data : internshipDataApproved
+        });
+
+    }catch (e) {
+        return res.status(400).json({
+            message : "There was some error while fetching the data"
+        });
+    }
+}
+
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
