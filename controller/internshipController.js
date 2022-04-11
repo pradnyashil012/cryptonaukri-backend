@@ -12,7 +12,7 @@ exports.postInternship = async (req,res)=>{
             return res.status(201).json({
                 code : "INTERNSHIP_ADDED",
                 isInternshipAdded : true ,
-                message : "Job has been added to database",
+                message : "Internship has been added and It's now waiting for approval",
                 details : data
             });
         }catch (e) {
@@ -31,7 +31,7 @@ exports.postInternship = async (req,res)=>{
     }
 }
 exports.findInternships = async (req,res)=>{
-    const data = await internshipDatabase.find({isDisabled : false});
+    const data = await internshipDatabase.find({isDisabled : false , hasBeenApproved : true});
     return res.status(200).json({
         code : "INTERNSHIP_FOUND",
         data
