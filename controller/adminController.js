@@ -257,13 +257,14 @@ exports.adminDashBoardData = async (req,res)=>{
     if(req.user.ROLE === "ADMIN"){
         try{
             const jobsData = await jobDatabase.find({});
+            const jobsToApprove = await jobsDatabase.find({hasBeenApproved : false });
             const internshipData =  await internshipDatabase.find({});
             const users = await userDatabase.find({});
             const businesses = await businessDatabase.find({});
             return res.status(200).json({
                 code : "DATA",
                 data : {
-                    jobsData , internshipData , users ,businesses
+                    jobsData , internshipData , users ,businesses , jobsToApprove
                 }
             });
         }catch (e) {
@@ -288,19 +289,6 @@ exports.fetchAdminLogs = async (req,res)=>{
     }else{
         return res.status(403).json({
             message : "Sorry You are not authorized to access this endpoint"
-        });
-    }
-}
-exports.jobsToApprove = async (req,res)=>{
-    try {
-        const jobs = await jobsDatabase.find({hasBeenApproved : false });
-        return res.status(200).json({
-            code : "DATA",
-            data : jobs
-        });
-    }catch (e) {
-        return res.status(400).json({
-            message : "There was some error while fetching the data"
         });
     }
 }
