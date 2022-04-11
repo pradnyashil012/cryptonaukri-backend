@@ -376,7 +376,7 @@ exports.loggedInBusinessDetails = async (req,res)=> {
             const jobsAdded = await jobsDatabase.find({postedBy: req.user._id, hasBeenApproved : true});
             const {executiveName , officialEmail , companyName , description , establishedYear
                 , headquarters , websiteLink , password , GSTIN} = req.user;
-            const internshipsAdded = await internshipDatabase.find({postedBy : req.user._id});
+            const internshipsAdded = await internshipDatabase.find({postedBy : req.user._id , hasBeenApproved : true});
 
             return res.status(200).json({executiveName , officialEmail , companyName , description , establishedYear
                 , headquarters , websiteLink , password, GSTIN , jobsAdded , internshipsAdded  });
