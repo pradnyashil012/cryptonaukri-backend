@@ -55,6 +55,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - /fetchAdminLogs = to fetch admin logs [GET]
 - /dashboard = To get admin dashboard data [GET]
 - /jobToApprove/:jobID = To approve a job [POST]
+- /internshipToApprove/:internshipID = To approve an internship [POST]
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
