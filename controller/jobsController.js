@@ -12,7 +12,7 @@ exports.postJob = async (req,res)=>{
             return res.status(201).json({
                 code : "JOB_ADDED",
                 isJobAdded : true ,
-                message : "Job has been added to database",
+                message : "Job has been added and It's now waiting for approval",
                 details : data
             });
         }catch (e) {
@@ -33,7 +33,7 @@ exports.postJob = async (req,res)=>{
 }
 
 exports.findJobs = async (req,res)=>{
-    const data = await jobsDatabase.find({isDisabled : false});
+    const data = await jobsDatabase.find({isDisabled : false,hasBeenApproved : true});
     return res.status(200).json({
         code : "JOBS_FOUND",
         data
