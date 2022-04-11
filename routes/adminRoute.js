@@ -1,6 +1,9 @@
 const express = require("express");
-const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity, fetchAdminLogs} = require("../controller/adminController");
+const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity, fetchAdminLogs,
+    adminDashBoardData, jobsToApprove, jobApprovalPart
+} = require("../controller/adminController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
+const {adminOnly} = require("../middleware/authorizationMiddlewares");
 const router = express.Router();
 
 router.route("/login")
@@ -15,5 +18,10 @@ router.route("/deleteJob/:jobID")
     .delete(verifyJWT,deleteJob);
 router.route("/fetchlogs")
     .get(fetchAdminLogs);
+
+router.route("/dashboard")
+    .get([verifyJWT,adminOnly],adminDashBoardData);
+router.route("/jobToApprove/:jobID")
+    .post([verifyJWT,adminOnly],jobApprovalPart);
 
 module.exports = router;
