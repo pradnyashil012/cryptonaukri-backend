@@ -344,7 +344,7 @@ exports.jobApprovalPart = async (req,res)=>{
 
 exports.internshipApprovalPart = async (req,res)=>{
     try{
-        const internshipDataApproved = await jobDatabase.findByIdAndUpdate(req.params.internshipID ,
+        const internshipDataApproved = await internshipDatabase.findByIdAndUpdate(req.params.internshipID ,
             {hasBeenApproved : true} , {new : true});
         await adminLogDatabase.create({
             approvedBy : req.user._id,
@@ -383,6 +383,7 @@ exports.internshipApprovalPart = async (req,res)=>{
         });
 
     }catch (e) {
+        console.log(e);
         return res.status(400).json({
             message : "There was some error while fetching the data"
         });
