@@ -112,6 +112,10 @@ const Schema = new mongoose.Schema({
     isDisabled : {
         type : Boolean ,
         default : false
+    },
+    hasBeenApproved : {
+        type : Boolean ,
+        default : false
     }
 });
 
