@@ -1,6 +1,6 @@
 const express = require("express");
 const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity, fetchAdminLogs,
-    adminDashBoardData, jobApprovalPart
+    adminDashBoardData, jobApprovalPart, internshipApprovalPart
 } = require("../controller/adminController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const {adminOnly} = require("../middleware/authorizationMiddlewares");
@@ -24,6 +24,6 @@ router.route("/dashboard")
 router.route("/jobToApprove/:jobID")
     .post([verifyJWT,adminOnly],jobApprovalPart);
 router.route("/internshipToApprove/:internshipID")
-    .post([verifyJWT,adminOnly],jobApprovalPart);
+    .post([verifyJWT,adminOnly],internshipApprovalPart);
 
 module.exports = router;
