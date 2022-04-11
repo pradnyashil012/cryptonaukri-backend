@@ -13,6 +13,7 @@ const keyGeneration = require("../utils/adminKeyGeneration");
 const jobsDatabase = require("../models/business/jobSchema");
 const jobAnswersDatabase = require("../models/user/userAnswersModel");
 const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
+const nodemailer = require("nodemailer");
 
 exports.ownerAdminKeyGeneration = async (req,res)=>{
     if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
@@ -287,6 +288,66 @@ exports.fetchAdminLogs = async (req,res)=>{
     }else{
         return res.status(403).json({
             message : "Sorry You are not authorized to access this endpoint"
+        });
+    }
+}
+exports.jobsToApprove = async (req,res)=>{
+    try {
+        const jobs = await jobsDatabase.find({hasBeenApproved : false });
+        return res.status(200).json({
+            code : "DATA",
+            data : jobs
+        });
+    }catch (e) {
+        return res.status(400).json({
+            message : "There was some error while fetching the data"
+        });
+    }
+}
+
+exports.jobApprovalPart = async (req,res)=>{
+    try{
+        const jobDataApproved = await jobDatabase.findByIdAndUpdate(req.params.jobID ,
+            {hasBeenApproved : true} , {new : true});
+        await adminLogDatabase.create({
+            approvedBy : req.user._id,
+            extendedData : jobDataApproved._id ,
+            extendedOn : new Date(Date.now())
+        });
+
+        const transporter = nodemailer.createTransport({
+            service : "smtp",
+            host : process.env.EMAIL_HOST,
+            name :process.env.EMAIL_NAME,
+            port : process.env.EMAIL_PORT,
+            secure : true ,
+            auth : {
+                user : process.env.EMAIL,
+                pass: process.env.PASSWORD
+            }
+        });
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: jobDataApproved.postedByDetails.officialEmail,
+            subject: 'Job Approved',
+            html: `
+               <h4>Hey There , ${jobDataApproved.postedByDetails.executiveName}</h4>
+               <h4>The Job(${jobDataApproved.jobTitle}) which you posted has been approved</h4>
+            `
+        }
+        transporter.sendMail(mailOptions,(err,data)=>{
+            if(err)
+                console.log(err);
+        });
+        return res.status(200).json({
+           code : "JOB approved",
+           message : "Job has been approved",
+           data : jobDataApproved
+        });
+
+    }catch (e) {
+        return res.status(400).json({
+            message : "There was some error while fetching the data"
         });
     }
 }
