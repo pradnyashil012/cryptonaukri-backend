@@ -79,6 +79,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - ~~adding endpoint which will allow admin to increase the date of expiration of user and business.~~
 - ~~Fetching Business Details and User Details for admin~~
 - ~~adding exact user details for new database during signup for community purpose~~ 
+- making job/internship delete endpoints for business.
 
 ## Responses :
 #### - OTP :
