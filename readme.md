@@ -3,7 +3,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 
 ## End Points : 
 #### User Routes
-**- /api/v1/user/signup?coupon=someCoupon :** To add user to database.   
+**- /api/v1/user/signup?coupon=someCoupon :** To add user to database [include signupCoupon in the body]  
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
 **- /api/v1/user/changePassword :** To change the current password.
@@ -84,6 +84,8 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - ~~adding exact user details for new database during signup for community purpose~~ 
 - making job/internship delete endpoints for business.
 - ~~adding job approval part~~
+- adding 
+- git clone https://<repository_owner>:<personal_access_token>@github.com/<repository_owner>/<repo>.git
 
 ## Responses :
 #### - OTP :
