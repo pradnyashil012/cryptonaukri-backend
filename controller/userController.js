@@ -88,15 +88,6 @@ exports.userSignup = async (req,res)=>{
     redisClient.get(req.body.email)
         .then( async (data)=> {
             if( Number(data) === req.body.otp){
-                const signupCoupons = ["CN22","JOINCN22","CRYPTONAUKRI100","JOINCRYPTONAUKRI","JOINCRYPTONAUKRI22","CRYPTONAUKRI22",
-                "CN100","JOINCN100","JOINCRYPTONAUKRI100"];
-                if(!signupCoupons.includes(req.body.signupCoupon)){
-                    return res.status(400).json({
-                        code : "WRONG_SIGNUP_COUPON",
-                        userAdded : false,
-                        message : "Signup coupon code which you contain isn't valid"
-                    });
-                }
                 if(req.query.coupon){
                     const couponData = await couponDatabase.findOne({ couponCode : req.query.coupon });
                     if(couponData.referredUserEmail.length < 3){
