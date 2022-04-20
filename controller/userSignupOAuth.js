@@ -33,7 +33,7 @@ exports.oAuthCall = async (req,res)=>{
 }
 exports.googleUserInfo = async (req,res)=>{
     const data = await getGoogleUser(req.query.code);
-    console.log(data);
+    // console.log(data);
     const user = await userDatabase.findOne({email : data.email});
     if(user){
         if(user.accountDisableDate < Date.now() && !user.isDisabled){
