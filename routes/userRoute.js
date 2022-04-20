@@ -5,11 +5,16 @@ const {userSignup , userLogin, sendOTP, changePassword , forgetPasswordOTP ,forg
 } = require("../controller/userController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const {userOnly} = require("../middleware/authorizationMiddlewares");
+const {oAuthCall, googleUserInfo} = require("../controller/userSignupOAuth");
 
 router.route("/signup")
     .post(userSignup);
 router.route("/login")
     .post(userLogin);
+router.route("/googleSignup")
+    .get(oAuthCall);
+
+
 router.route("/otp")
     .get(sendOTP);
 router.route("/forgetPasswordOTP")
@@ -18,6 +23,8 @@ router.route("/forgetPassword")
     .post(forgetPassword);
 router.route("/userDetails")
     .get(userDetails);
+router.route("/googleUserInfo")
+    .get(googleUserInfo);
 
 
 router.route("/forgotPassword")
