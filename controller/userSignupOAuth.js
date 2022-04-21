@@ -8,6 +8,9 @@ const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_SECRET,
     `${process.env.CURRENT_URL}/api/v1/user/googleUserInfo`
 );
+/*
+
+*/
 
 exports.oAuthCall = async (req,res)=>{
    try{
@@ -63,6 +66,7 @@ exports.googleUserInfo = async (req,res)=>{
 
 async function getGoogleUser(code) {
     const { tokens } = await oAuth2Client.getToken(code);
+    // console.log(tokens);
     const googleUser = await axios
         .get(
             `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`,
