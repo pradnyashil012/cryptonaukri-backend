@@ -8,6 +8,7 @@ const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 const userAnswersDatabase = require("../models/user/userAnswersModel");
 const userResumeDatabase = require("../models/user/userResumeSchema");
 const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
+const customCouponDatabase = require("../models/customCoupon");
 // const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
 const redisClient = new Redis(process.env.REDIS);
 const mongoose = require("mongoose");
@@ -108,6 +109,14 @@ exports.userSignup = async (req,res)=>{
                     location : req.body.location,
                     phoneNumber : req.body.phoneNumber
                 };
+
+                if(req.query.bonusCoupon){
+                    const customCouponData = await customCouponDatabase.findOne({finalCoupon : req.query.bonusCoupon});
+                    if(customCouponData){
+                        await customCouponDatabase.findByIdAndUpdate(customCouponData._id , {isBeingUsed : true});
+                        userDataToBeSaved.accountDisableDate = Date.now() + ( customCouponData.numberOfDays * 24 * 60 * 60 * 1000 );
+                    }
+                }
                 /*
                 initial thought was to return data code from func and put func below into a while loop with await.
                 let couponCode = null;
