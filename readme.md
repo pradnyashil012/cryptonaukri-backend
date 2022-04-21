@@ -3,7 +3,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 
 ## End Points : 
 #### User Routes
-**- /api/v1/user/signup?coupon=someCoupon :** To add user to database 
+**- /api/v1/user/signup?coupon=someCoupon&?bonusCoupon=SomeCoupon100 :** To add user to database 
 **- /api/v1/user/login :** To login   
 **- /api/v1/user/otp?email=youremail :** To get OTP at particular email address   
 **- /api/v1/user/changePassword :** To change the current password.
