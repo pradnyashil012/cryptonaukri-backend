@@ -56,6 +56,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - /dashboard = To get admin dashboard data [GET]
 - /jobToApprove/:jobID = To approve a job [POST]
 - /internshipToApprove/:internshipID = To approve an internship [POST]
+- /customCoupon = To generate Custom Coupons.
 
 ### Todo List : 
 - ~~Adding Endpoint for Updating Password.~~
