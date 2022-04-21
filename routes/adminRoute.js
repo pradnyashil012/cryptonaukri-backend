@@ -1,6 +1,6 @@
 const express = require("express");
 const {adminLogin, adminSignup, ownerAdminKeyGeneration, deleteJob, increaseValidity, fetchAdminLogs,
-    adminDashBoardData, jobApprovalPart, internshipApprovalPart
+    adminDashBoardData, jobApprovalPart, internshipApprovalPart, generateCustomCoupon
 } = require("../controller/adminController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const {adminOnly} = require("../middleware/authorizationMiddlewares");
@@ -19,6 +19,9 @@ router.route("/deleteJob/:jobID")
 router.route("/fetchlogs")
     .get(fetchAdminLogs);
 
+
+router.route("/customCoupon")
+    .post([verifyJWT,adminOnly],generateCustomCoupon);
 router.route("/dashboard")
     .get([verifyJWT,adminOnly],adminDashBoardData);
 router.route("/jobToApprove/:jobID")
