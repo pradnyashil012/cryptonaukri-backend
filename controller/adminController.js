@@ -14,6 +14,7 @@ const jobsDatabase = require("../models/business/jobSchema");
 const jobAnswersDatabase = require("../models/user/userAnswersModel");
 const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
 const nodemailer = require("nodemailer");
+const customCouponDatabase = require("../models/customCoupon");
 
 exports.ownerAdminKeyGeneration = async (req,res)=>{
     if(req.body.username === process.env.OWNER_USERNAME && req.body.password === process.env.OWNER_PASSWORD){
@@ -386,6 +387,31 @@ exports.internshipApprovalPart = async (req,res)=>{
         console.log(e);
         return res.status(400).json({
             message : "There was some error while fetching the data"
+        });
+    }
+}
+/*
+
+ */
+exports.generateCustomCoupon = async (req,res)=>{
+    try{
+        req.body.finalCoupon = req.body.couponName + req.body.numberOfDays;
+        const couponData = await customCouponDatabase.create(req.body);
+        await adminLogDatabase.create({
+            addedBy : req.user._id,
+            couponAdded : couponData._id,
+            addedOn : new Date(Date.now())
+        });
+        return res.status(201).json({
+            data : couponData,
+            finalCoupon : req.body.finalCoupon,
+            message : "Your Custom Coupon has been added to database",
+            code : "CUSTOM_COUPON_ADDED"
+        });
+    }catch (e) {
+        return res.status(400).json({
+            message : "Your Custom Coupon has not been added to database",
+            code : "CUSTOM_COUPON_NOT_ADDED"
         });
     }
 }
