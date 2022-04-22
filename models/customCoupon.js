@@ -6,6 +6,10 @@ const Schema = new mongoose.Schema({
      required : true,
      unique : true
    },
+   createBy:{
+     type : mongoose.Schema.Types.Object ,
+      ref : "admin"
+   },
    couponName : {
       type : String ,
       required : true,
