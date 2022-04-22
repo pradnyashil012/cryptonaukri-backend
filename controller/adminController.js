@@ -396,6 +396,8 @@ exports.internshipApprovalPart = async (req,res)=>{
 exports.generateCustomCoupon = async (req,res)=>{
     try{
         req.body.finalCoupon = req.body.couponName + req.body.numberOfDays;
+        const {firstName , lastName , officialEmail , _id } = req.user;
+        req.body.createdBy = {firstName , lastName , officialEmail, _id}
         const couponData = await customCouponDatabase.create(req.body);
         await adminLogDatabase.create({
             addedBy : req.user._id,
