@@ -9,9 +9,6 @@ const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_SECRET,
     `${process.env.CURRENT_URL}/api/v1/user/googleUserInfo`
 );
-/*
-
-*/
 
 exports.oAuthCall = async (req,res)=>{
    try{
@@ -31,47 +28,38 @@ exports.oAuthCall = async (req,res)=>{
            reDirectURL
        });
    }catch (e) {
-       console.log("OAUTH CALL");
        console.log(e);
+       return res.status(400).json({
+           message : "Some Error Occurred While Login/Signup",
+           code : "FAILED_LOG_IN",
+           userLoggedIn : false
+       });
    }
 }
 exports.googleUserInfo = async (req,res)=>{
     try{
         const data = await getGoogleUser(req.query.code);
         // console.log(data);
-        let user = await userDatabase.findOne({email : data.email});
-        if(user){
-            if(user.accountDisableDate < Date.now() && !user.isDisabled){
-                return res.status(400).json({
-                    code : "INVALID",
-                    userLoggedIn : false,
-                    message : "Account has been disabled(free trial period expired)"
-                });
-            }
-        }else{
-            const userDataToBeSaved = {
-                firstName : data.given_name,
-                lastName : null,
-                email : data.email,
-                password : null,
-                location : null,
-                phoneNumber : null
-            };
-            userDataToBeSaved.couponCode = await keyGenAndStoreFunc(data.email);
-            user = await userDatabase.create(userDataToBeSaved);
-        }
-        const token = await jwt.sign({
-            userID : user._id,
-            ROLE : "USER"
-        },process.env.JWT_KEY, {
-            expiresIn : "48h"
+        await signUpOrSignInUser(data.email,data.given_name,req,res);
+    }catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            message : "Some Error Occurred While Login/Signup",
+            code : "FAILED_LOG_IN",
+            userLoggedIn : false
         });
-        return res.status(200).header({
-            "Authorization" : token
-        }).json({
-            userLoggedIn : true ,
-            code : "LOGGED_IN" ,
-            message : "User Logged In Successfully"
+    }
+}
+
+
+
+exports.githubOAuthCall = async (req,res)=>{
+    try{
+        const data = await axios.get(`https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_url=${process.env.GITHUB_REDIRECT}&scope=read:user,user:email`);
+        return res.status(200).json({
+            message : "OAuth Redirect URL",
+            code : "OAUTH_SUCCESS",
+            reDirectURL : data.request.res.responseUrl
         });
     }catch (e) {
         console.log(e);
@@ -81,6 +69,75 @@ exports.googleUserInfo = async (req,res)=>{
             userLoggedIn : false
         });
     }
+}
+
+exports.githubUserInfo = async (req,res)=>{
+   try{
+       const code = req.query.code;
+       const accessTokenResponse = await axios.post(`https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&redirect_url=${process.env.GITHUB_REDIRECT}&code=${code}`,{
+           headers : {
+               Accept : "application/json"
+           }
+       });
+       let accessToken = accessTokenResponse.data;
+       accessToken=accessToken.split("=")[1].split("&")[0]
+       const userData = await axios.get("https://api.github.com/user",{
+           headers : {
+               Authorization : `token ${accessToken}`
+           }
+       });
+       const userDataEmail = await axios.get("https://api.github.com/user/emails",{
+           headers : {
+               Authorization : `token ${accessToken}`
+           }
+       });
+       await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.name,req,res);
+   }catch (e) {
+       console.log(e);
+       return res.status(400).json({
+           message : "Some Error Occurred While Login/Signup",
+           code : "FAILED_LOG_IN",
+           userLoggedIn : false
+       });
+   }
+}
+
+
+const signUpOrSignInUser = async (email,given_name,req,res)=>{
+    let user = await userDatabase.findOne({email : email});
+    if(user){
+        if(user.accountDisableDate < Date.now() && !user.isDisabled){
+            return res.status(400).json({
+                code : "INVALID",
+                userLoggedIn : false,
+                message : "Account has been disabled(free trial period expired)"
+            });
+        }
+    }else{
+        const userDataToBeSaved = {
+            firstName : given_name,
+            lastName : null,
+            email : email,
+            password : null,
+            location : null,
+            phoneNumber : null
+        };
+        userDataToBeSaved.couponCode = await keyGenAndStoreFunc(email);
+        user = await userDatabase.create(userDataToBeSaved);
+    }
+    const token = await jwt.sign({
+        userID : user._id,
+        ROLE : "USER"
+    },process.env.JWT_KEY, {
+        expiresIn : "48h"
+    });
+    return res.status(200).header({
+        "Authorization" : token
+    }).json({
+        userLoggedIn : true ,
+        code : "LOGGED_IN" ,
+        message : "User Logged In Successfully"
+    });
 }
 
 async function getGoogleUser(code) {
@@ -101,6 +158,19 @@ async function getGoogleUser(code) {
         });
     return googleUser;
 }
+
+/*
+[
+    {
+    email: 'prateekkumartiwari01@gmail.com',
+    primary: true,
+    verified: true,
+    visibility: 'private'
+    }
+]
+ */
+
+
 /*
 console.log(tokens)
     {
@@ -116,8 +186,6 @@ console.log(tokens)
     6lrTa1TtQUi23LN42ndUwkivcaNKzhg0rz7uHH_tkEse3cqTkSlsiN84dq6br-OxJjJFOfh0__ha9jd3dUhGMhJ1yMPq9hQmcTPiNYC-SbUvKons8M5AfgaHa8yZ2H76KWf7ERVHQ2CMf1S_y_vsIGwuyUqYoP7LpB5xsRHZOgiPywPaGPgNTTtlnF-g4vg3FcQe1ze-WHf_gvCwl-8u5CRErSp33OXhRCL0iXmuFayuPg2l9MKmJHhK9xKylF0Ck7gcq1wYFkDYaD7Ps95sbY8HantF4U6hS74nzuM3ON0FkzF7bNR19kg_IZhsPHbGQ',
   expiry_date: 1650710883567
 }
-
-
     console.log(data);
     {
       id: '108023464997906079683',
