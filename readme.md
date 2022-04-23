@@ -16,6 +16,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 **- /api/v1/user/updateResume** : To Update user Resume (Pass in JWT) [PUT]
 **- /api/v1/user/updateProfile** : To Update user Profile (Pass in JWT) [PUT]
 **- /api/v1/user/googleSignup :** To Generate the link where you need to redirect the user for signup/login through Google.
+**- /api/v1/user/githubSignup :** To Generate the link where you need to redirect the user for signup/login through GitHub.
 
 #### Business Routes [/api/v1/business]
 **- /signup?coupon=coupon:** To add user to database.   
