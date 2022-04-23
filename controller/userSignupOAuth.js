@@ -2,6 +2,7 @@ const {google} = require("googleapis");
 const axios = require("axios");
 const userDatabase = require("../models/user/userSchema");
 const jwt = require("jsonwebtoken");
+const keyGenAndStoreFunc = require("../utils/couponKeyGenerationAndSaving");
 
 const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
@@ -35,16 +36,29 @@ exports.oAuthCall = async (req,res)=>{
    }
 }
 exports.googleUserInfo = async (req,res)=>{
-    const data = await getGoogleUser(req.query.code);
-    // console.log(data);
-    const user = await userDatabase.findOne({email : data.email});
-    if(user){
-        if(user.accountDisableDate < Date.now() && !user.isDisabled){
-            return res.status(400).json({
-                code : "INVALID",
-                userLoggedIn : false,
-                message : "Account has been disabled(free trial period expired)"
-            });
+    try{
+        const data = await getGoogleUser(req.query.code);
+        // console.log(data);
+        let user = await userDatabase.findOne({email : data.email});
+        if(user){
+            if(user.accountDisableDate < Date.now() && !user.isDisabled){
+                return res.status(400).json({
+                    code : "INVALID",
+                    userLoggedIn : false,
+                    message : "Account has been disabled(free trial period expired)"
+                });
+            }
+        }else{
+            const userDataToBeSaved = {
+                firstName : data.given_name,
+                lastName : null,
+                email : data.email,
+                password : null,
+                location : null,
+                phoneNumber : null
+            };
+            userDataToBeSaved.couponCode = await keyGenAndStoreFunc(data.email);
+            user = await userDatabase.create(userDataToBeSaved);
         }
         const token = await jwt.sign({
             userID : user._id,
@@ -59,8 +73,13 @@ exports.googleUserInfo = async (req,res)=>{
             code : "LOGGED_IN" ,
             message : "User Logged In Successfully"
         });
-    }else{
-        console.log("create a new user");
+    }catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            message : "Some Error Occurred While Login/Signup",
+            code : "FAILED_LOG_IN",
+            userLoggedIn : false
+        });
     }
 }
 
@@ -82,3 +101,32 @@ async function getGoogleUser(code) {
         });
     return googleUser;
 }
+/*
+console.log(tokens)
+    {
+  access_token: 'ya29.A0ARrdaM8GPx2ixIU44cdOQj9X5ElsoAlVIw_JR8Gc_kfmvTOJhJdF3KxXPxVITp6ezyDsTFCLZ1-xXQA3tWo2AMq-VGVNVQjUqe_HQCQiDvHyXMhHxPUyxEGcqiDF58YxQ0JVTXP_oSFpTvvEVkNefU3riuxf',
+  refresh_token: '1//0gWFD75D0hxxtCgYIARAAGBASNwF-L9IrNysfuGlRBo2rP6a1YOtjervqtgULpksw4dgQS4gZPJfNuOxQUuC5dA1trQUYlh9w4Aw',
+  scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+  token_type: 'Bearer',
+  id_token: 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImQzMzJhYjU0NWNjMTg5ZGYxMzNlZmRkYjNhNmM0MDJlYmY0ODlhYzIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20i
+    LCJhenAiOiI5NDE4NTU5ODg3NjktcjdmOXN0N2gycDg0dDNmMTcxZzA0cnF0Y3A4ZXZsZzguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5NDE4NTU5ODg3NjktcjdmOXN0N2gycDg0dDNmMTcxZzA0
+    cnF0Y3A4ZXZsZzguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDI4OTk4ODkzNDgwNDc2NzY1MzIiLCJlbWFpbCI6ImVuZm9yYzNyckBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwi
+    YXRfaGFzaCI6Ikh6Q0VpRU1WT1hRSWR2Y1M4dUFzTUEiLCJuYW1lIjoiRW5mb3JjM3JyIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoajNsYkVtbFlSNHJQUENV
+    MnZQR2ZHbUd2MXUxWnNrWlc2S1dKaz1zOTYtYyIsImdpdmVuX25hbWUiOiJFbmZvcmMzcnIiLCJsb2NhbGUiOiJlbi1HQiIsImlhdCI6MTY1MDcwNzI4MywiZXhwIjoxNjUwNzEwODgzfQ.XC5qkORy_4C0UNNSQds1D
+    6lrTa1TtQUi23LN42ndUwkivcaNKzhg0rz7uHH_tkEse3cqTkSlsiN84dq6br-OxJjJFOfh0__ha9jd3dUhGMhJ1yMPq9hQmcTPiNYC-SbUvKons8M5AfgaHa8yZ2H76KWf7ERVHQ2CMf1S_y_vsIGwuyUqYoP7LpB5xsRHZOgiPywPaGPgNTTtlnF-g4vg3FcQe1ze-WHf_gvCwl-8u5CRErSp33OXhRCL0iXmuFayuPg2l9MKmJHhK9xKylF0Ck7gcq1wYFkDYaD7Ps95sbY8HantF4U6hS74nzuM3ON0FkzF7bNR19kg_IZhsPHbGQ',
+  expiry_date: 1650710883567
+}
+
+
+    console.log(data);
+    {
+      id: '108023464997906079683',
+      email: 'emailfortestingpurpose123@gmail.com',
+      verified_email: true,
+      name: 'Test Email',
+      given_name: 'Test',
+      family_name: 'Email',
+      picture: 'https://lh3.googleusercontent.com/a/AATXAJzIxmrPzI9NIaSSWWvK4_hvSXXFz1NJEyj_GNDl=s96-c',
+      locale: 'en'
+    }
+ */
