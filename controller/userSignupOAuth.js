@@ -102,6 +102,24 @@ exports.githubUserInfo = async (req,res)=>{
    }
 }
 
+exports.linkedinOAuthCall = async (req,res)=>{
+    try{
+        const data = await axios.get(`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&scope=r_liteprofile%20r_emailaddress&state=cryptonaukri`);
+        return res.status(200).json({
+            message : "OAuth Redirect URL",
+            code : "OAUTH_SUCCESS",
+            reDirectURL : data.request.res.responseUrl
+        });
+    }catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            message : "Some Error Occurred While Login/Signup",
+            code : "FAILED_LOG_IN",
+            userLoggedIn : false
+        });
+    }
+}
+
 
 const signUpOrSignInUser = async (email,given_name,req,res)=>{
     let user = await userDatabase.findOne({email : email});
