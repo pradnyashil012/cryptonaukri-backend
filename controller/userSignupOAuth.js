@@ -144,8 +144,7 @@ exports.linkedinUserInfo = async (req,res)=>{
         });
         let userEmail = userEmailData.data.elements[0];
         userEmail = userEmail["handle~"].emailAddress;
-        console.log(userEmail);
-        // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.localizedFirstName,req,res);
+        await signUpOrSignInUser(userEmail,userData.data.localizedFirstName,req,res);
     }catch (e) {
         console.log(e);
         return res.status(400).json({
