@@ -124,10 +124,9 @@ exports.linkedinUserInfo = async (req,res)=>{
     try{
         const code = req.query.code;
         const accessTokenResponse = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?client_id=${process.env.LINKEDIN_CLIENT_ID}&client_secret=${process.env.LINKEDIN_CLIENT_SECRET}&redirect_url=${process.env.LINKEDIN_REDIRECT}&code=${code}&grant_type=authorization_code`);
-        let accessToken = accessTokenResponse.data.access_token;
+        let accessToken = accessTokenResponse.data;
 
         console.log(accessToken);
-
 
         // const userData = await axios.get("https://api.linkedin.com/v2/me",{
         //     headers : {
