@@ -104,7 +104,7 @@ exports.githubUserInfo = async (req,res)=>{
 
 exports.linkedinOAuthCall = async (req,res)=>{
     try{
-        const data = await axios.get(`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&scope=r_liteprofile%20r_emailaddress`);
+        const data = await axios.get(`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&scope=r_liteprofile%20r_emailaddress&state`);
         return res.status(200).json({
             message : "OAuth Redirect URL",
             code : "OAUTH_SUCCESS",
@@ -121,7 +121,31 @@ exports.linkedinOAuthCall = async (req,res)=>{
 }
 
 exports.linkedinUserInfo = async (req,res)=>{
-    console.log(req.query.code);
+    try{
+        const code = req.query.code;
+        const accessTokenResponse = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?client_id=${process.env.LINKEDIN_CLIENT_ID}&client_secret=${process.env.LINKEDIN_CLIENT_SECRET}&redirect_url=${process.env.LINKEDIN_REDIRECT}&code=${code}&grant_type=authorization_code`,{
+            headers : {
+                Accept : "application/json"
+            }
+        });
+        let accessToken = accessTokenResponse.data.access_token;
+        const userData = await axios.get("https://api.linkedin.com/v2/me",{
+            headers : {
+                Authorization : `Bearer ${accessToken}`
+            }
+        });
+
+        console.log(userData);
+
+        // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.name,req,res);
+    }catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            message : "Some Error Occurred While Login/Signup",
+            code : "FAILED_LOG_IN",
+            userLoggedIn : false
+        });
+    }
 }
 
 
