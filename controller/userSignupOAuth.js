@@ -129,17 +129,16 @@ exports.linkedinUserInfo = async (req,res)=>{
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         });
-        let accessToken = accessTokenResponse.data;
+        let accessToken = accessTokenResponse.data.access_token;
 
-        console.log(accessToken);
 
-        // const userData = await axios.get("https://api.linkedin.com/v2/me",{
-        //     headers : {
-        //         Authorization : `Bearer ${accessToken}`
-        //     }
-        // });
+        const userData = await axios.get("https://api.linkedin.com/v2/me",{
+            headers : {
+                Authorization : `Bearer ${accessToken}`
+            }
+        });
 
-        // console.log(userData);
+        console.log(userData);
         // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.name,req,res);
     }catch (e) {
         console.log(e);
