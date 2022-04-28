@@ -123,7 +123,8 @@ exports.linkedinOAuthCall = async (req,res)=>{
 exports.linkedinUserInfo = async (req,res)=>{
     try{
         const code = req.query.code;
-        const accessTokenResponse = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?client_id=${process.env.LINKEDIN_CLIENT_ID}&client_secret=${process.env.LINKEDIN_CLIENT_SECRET}&redirect_url=${process.env.LINKEDIN_REDIRECT}&code=${code}&grant_type=authorization_code`,{
+        // console.log(code);
+        const accessTokenResponse = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?client_id=${process.env.LINKEDIN_CLIENT_ID}&client_secret=${process.env.LINKEDIN_CLIENT_SECRET}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&code=${code}&grant_type=authorization_code`,{
             headers : {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
