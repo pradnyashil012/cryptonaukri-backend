@@ -30,7 +30,7 @@ router.route("/googleUserInfo")
     .get(googleUserInfo);
 router.route("/githubUserInfo")
     .get(githubUserInfo);
-router.route("/linkedinInfo")
+router.route("/linkedinUserInfo")
     .get(linkedinUserInfo);
 
 

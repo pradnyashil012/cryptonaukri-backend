@@ -104,7 +104,7 @@ exports.githubUserInfo = async (req,res)=>{
 
 exports.linkedinOAuthCall = async (req,res)=>{
     try{
-        const data = await axios.get(`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&scope=r_liteprofile%20r_emailaddress%20w_member_social`);
+        const data = await axios.get(`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT}&scope=r_liteprofile%20r_emailaddress`);
         return res.status(200).json({
             message : "OAuth Redirect URL",
             code : "OAUTH_SUCCESS",
