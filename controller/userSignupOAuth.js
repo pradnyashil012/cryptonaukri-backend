@@ -137,7 +137,7 @@ exports.linkedinUserInfo = async (req,res)=>{
             }
         });
 
-        const userEmailData = await axios.get("GET https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))",{
+        const userEmailData = await axios.get("https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))",{
             headers : {
                 Authorization : `Bearer ${accessToken}`
             }
