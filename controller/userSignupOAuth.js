@@ -129,8 +129,7 @@ exports.linkedinUserInfo = async (req,res)=>{
                 "Content-Type": "application/x-www-form-urlencoded"
             }
         });
-        let accessToken = accessTokenResponse.data.access_token;
-
+        const accessToken = accessTokenResponse.data.access_token;
 
         const userData = await axios.get("https://api.linkedin.com/v2/me",{
             headers : {
@@ -138,7 +137,14 @@ exports.linkedinUserInfo = async (req,res)=>{
             }
         });
 
-        console.log(userData);
+        const userEmailData = await axios.get("GET https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(primary,type,handle~))",{
+            headers : {
+                Authorization : `Bearer ${accessToken}`
+            }
+        });
+
+        console.log(userData.data.localizedFirstName);
+        console.log(userEmailData.data.elements[0]);
         // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.name,req,res);
     }catch (e) {
         console.log(e);
