@@ -142,10 +142,10 @@ exports.linkedinUserInfo = async (req,res)=>{
                 Authorization : `Bearer ${accessToken}`
             }
         });
-
-        console.log(userData.data.localizedFirstName);
-        console.log(userEmailData.data.elements[0]);
-        // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.name,req,res);
+        let userEmail = userEmailData.data.elements[0];
+        userEmail = userEmail["handle~"].emailAddress;
+        console.log(userEmail);
+        // await signUpOrSignInUser(userDataEmail.data[0].email,userData.data.localizedFirstName,req,res);
     }catch (e) {
         console.log(e);
         return res.status(400).json({
