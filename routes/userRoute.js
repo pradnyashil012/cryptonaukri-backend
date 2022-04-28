@@ -5,7 +5,7 @@ const {userSignup , userLogin, sendOTP, changePassword , forgetPasswordOTP ,forg
 } = require("../controller/userController");
 const {verifyJWT} = require("../middleware/jwtAuthentication");
 const {userOnly} = require("../middleware/authorizationMiddlewares");
-const {oAuthCall, googleUserInfo, githubUserInfo, githubOAuthCall, linkedinOAuthCall} = require("../controller/userSignupOAuth");
+const {oAuthCall, googleUserInfo, githubUserInfo, githubOAuthCall, linkedinOAuthCall, linkedinUserInfo} = require("../controller/userSignupOAuth");
 
 router.route("/signup")
     .post(userSignup);
@@ -31,6 +31,7 @@ router.route("/googleUserInfo")
 router.route("/githubUserInfo")
     .get(githubUserInfo);
 router.route("/linkedinInfo")
+    .get(linkedinUserInfo);
 
 
 router.route("/forgotPassword")
