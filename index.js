@@ -14,6 +14,7 @@ const businessRoute = require("./routes/businessRoute");
 const jobRoute = require("./routes/jobRoute");
 const internshipRoute = require("./routes/internshipRoute");
 const adminRoute = require("./routes/adminRoute");
+const newsLetterRoute = require("./routes/newsLetterRoute");
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +27,7 @@ app.use("/api/v1/business",businessRoute);
 app.use("/api/v1/jobs",jobRoute);
 app.use("/api/v1/internship",internshipRoute);
 app.use("/api/v1/admin",adminRoute);
+app.use("/api/v1/newsLetter",newsLetterRoute);
 
 database()
     .then(()=>console.log("Connected To Database"))
