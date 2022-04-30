@@ -5,12 +5,9 @@ const redisClient = new Redis(process.env.REDIS);
 exports.userEmailForNewsLetter = async (req,res)=>{
     try{
         const emailOfUser = req.query.userEmail;
-        redisClient.sismember("newsLetterUsers",emailOfUser)
-            .then(async (data)=>{
-                if(Number(data)===0){
-                    await redisClient.sadd("newsLetterUsers",emailOfUser);
-                }
-              return res.status(201).json({
+        redisClient.sadd("newsLetterUsers",emailOfUser)
+            .then( (data)=>{
+                return res.status(201).json({
                   code : "ADDED",
                   emailAdded : true ,
                   message : "Your Email has been added to database"
