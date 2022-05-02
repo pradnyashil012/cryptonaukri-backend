@@ -12,6 +12,7 @@ const customCouponDatabase = require("../models/customCoupon");
 // const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
 const redisClient = new Redis(process.env.REDIS);
 const mongoose = require("mongoose");
+const otpTemplate = require("../utils/OtpEmail");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -51,12 +52,7 @@ exports.sendOTP = async (req,res)=>{
             from: process.env.EMAIL,
             to: req.query.email,
             subject: 'Email verification for Cryptonaukri.com',
-            html: `
-               <h2>Thanks for registering </h2>
-               <h4> Please verify your mail to continue...</h4>
-               <h4>You Have 10 mins to validate this OTP</h4>
-               <h4>${otp}</h4>
-            `
+            html: otpTemplate(otp,1)
         }
 
         transporter.sendMail(mailOptions,(err,data)=>{
@@ -264,11 +260,7 @@ exports.forgetPasswordOTP = async (req,res)=>{
             from: process.env.EMAIL,
             to: req.query.email,
             subject: 'OTP To Change Password for Cryptonaukri.com',
-            html: `
-               <h4>OTP To Change Your Password</h4>
-               <h4>You Have 10 mins to validate this OTP</h4>
-               <h4>${otp}</h4>
-            `
+            html: otpTemplate(otp,0)
         }
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
@@ -431,6 +423,26 @@ exports.userResumeUpdate = async (req,res)=>{
             message : "User Resume update failed",
             code : "RESUME_UPDATE_FAILED",
             isResumeUpdated : false
+        });
+    }
+}
+
+
+exports.userProfileUpdate = async (req,res)=>{
+    try{
+        const updatedUserProfile = await userDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});
+        return res.status(200).json({
+            message : "User Resume updated",
+            code : "RESUME_UPDATED",
+            isProfileUpdated : true,
+            data : updatedUserProfile
+        });
+
+    }catch (e) {
+        return res.status(400).json({
+            message : "User Profile update failed",
+            code : "PROFILE_UPDATE_FAILED",
+            isProfileUpdated : false
         });
     }
 }

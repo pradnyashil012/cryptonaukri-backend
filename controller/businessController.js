@@ -11,6 +11,7 @@ const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
 const jobAnswersDatabase = require("../models/user/userAnswersModel");
 const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
 const userDatabase = require("../models/user/userSchema");
+const otpTemplate = require("../utils/OtpEmail");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -49,12 +50,7 @@ exports.sendOTP = async (req,res)=>{
             from: process.env.EMAIL,
             to: req.query.email,
             subject: 'Business Email verification for Cryptonaukri.com',
-            html: `
-               <h2>Thanks for Choosing Cryptonaukri.com </h2>
-               <h4> Please verify your mail to continue...</h4>
-               <h4>You Have 10 mins to validate this OTP</h4>
-               <h4>${otp}</h4>
-            `
+            html:otpTemplate(otp,1)
         }
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
@@ -282,11 +278,7 @@ exports.forgetPasswordOTP = async (req,res)=>{
             from: process.env.EMAIL,
             to: req.query.email,
             subject: 'OTP To Change Password for Cryptonaukri.com',
-            html: `
-               <h4>OTP To Change Your Password</h4>
-               <h4>You Have 10 mins to validate this OTP</h4>
-               <h4>${otp}</h4>
-            `
+            html: otpTemplate(otp,0)
         }
         transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
