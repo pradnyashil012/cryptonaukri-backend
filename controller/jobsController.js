@@ -33,11 +33,18 @@ exports.postJob = async (req,res)=>{
 }
 
 exports.findJobs = async (req,res)=>{
-    const data = await jobsDatabase.find({isDisabled : false,hasBeenApproved : true});
-    return res.status(200).json({
-        code : "JOBS_FOUND",
-        data
-    });
+    try{
+        const data = await jobsDatabase.find({isDisabled : false,hasBeenApproved : true});
+        return res.status(200).json({
+            code : "JOBS_FOUND",
+            data
+        });
+    }catch (e) {
+        return res.status(500).json({
+           code : "ERROR",
+           message : "Some Error occurred while finding jobs"
+        });
+    }
 }
 
 exports.findJob = async (req,res)=>{
