@@ -427,27 +427,6 @@ exports.userResumeUpdate = async (req,res)=>{
     }
 }
 
-
-exports.userProfileUpdate = async (req,res)=>{
-    try{
-        const updatedUserProfile = await userDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});
-        return res.status(200).json({
-            message : "User Resume updated",
-            code : "RESUME_UPDATED",
-            isProfileUpdated : true,
-            data : updatedUserProfile
-        });
-
-    }catch (e) {
-        return res.status(400).json({
-            message : "User Profile update failed",
-            code : "PROFILE_UPDATE_FAILED",
-            isProfileUpdated : false
-        });
-    }
-}
-
-
 exports.userProfileUpdate = async (req,res)=>{
     try{
         const updatedUserProfile = await userDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});

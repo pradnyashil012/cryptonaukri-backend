@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema({
         type : String,
         default : "USER"
     },
+    communityRole : {
+        type : String ,
+        default : "GENERAL_USER"
+    },
+    diamondsCount : {
+      type : Number ,
+      default : 0
+    },
     accountDisableDate : {
       type : Date ,
       default : Date.now() + 14 * 24 * 60 * 60 * 1000
