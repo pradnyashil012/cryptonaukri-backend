@@ -180,6 +180,7 @@ exports.increaseValidity = async (req,res)=>{
                 const businessToIncreaseValidity = await businessDatabase.findOne({officialEmail : req.query.email});
                 businessToIncreaseValidity.accountDisableDate = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
+                // TODO : Recheck this part of code
                 if(businessToIncreaseValidity.isDisabled){
                     const jobs = await jobsDatabase.find({postedBy : businessToIncreaseValidity._id});
                     await asyncForEach(jobs , async (val)=>{
