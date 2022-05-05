@@ -427,6 +427,7 @@ exports.userResumeUpdate = async (req,res)=>{
     }
 }
 
+
 exports.userProfileUpdate = async (req,res)=>{
     try{
         const updatedUserProfile = await userDatabase.findByIdAndUpdate(req.user._id , req.body , {new : true});
