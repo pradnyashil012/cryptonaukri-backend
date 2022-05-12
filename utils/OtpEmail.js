@@ -51,7 +51,6 @@ gap: 0.5rem; ">
     <a href="">
     <img style="width: 1.25rem; " src="https://simpleicons.org/icons/linkedin.svg">
     </a>
-    <a href="">
   </div>
 </div>`
 };
