@@ -1,6 +1,7 @@
 const internshipDatabase = require("../models/business/internshipSchema");
 const internshipAnswerDatabase = require("../models/user/userAnswersInternship");
 const businessDatabase = require("../models/business/businessSchema");
+const {sendEmailAfterJobApply} = require("../utils/sendEmailFunctions");
 
 exports.postInternship = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -84,6 +85,8 @@ exports.applyInternship = async (req,res)=>{
 
             const {internshipTitle , responsibilities } = internshipAssociated;
             data.internshipDetails = {internshipTitle,responsibilities};
+
+            await sendEmailAfterJobApply(internshipAssociated.postedByDetails,req.user,internshipTitle);
 
             const savedData = await internshipAnswerDatabase.create(data);
             internshipAssociated.usersApplied.push(savedData);
