@@ -1,6 +1,7 @@
 const jobsDatabase = require("../models/business/jobSchema");
 const userAnswerDatabase = require("../models/user/userAnswersModel");
 const businessDatabase = require("../models/business/businessSchema");
+const {sendEmailAfterJobApply} = require("../utils/sendEmailFunctions");
 
 exports.postJob = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -74,12 +75,6 @@ exports.findJob = async (req,res)=>{
 exports.applyJob = async (req,res)=>{
     if(req.user.ROLE !== "BUSINESS"){
         try{
-            const data =  {
-                userAssociated: req.user._id,
-                jobAssociated : req.body.jobAssociated,
-                whyHire : req.body.whyHire ,
-                candidateAvailability : req.body.candidateAvailability
-            }
             const jobAssociated = await jobsDatabase.findById(req.body.jobAssociated);
             if(jobAssociated.usersApplied.filter(value => String(value.userAssociated) === String(req.user._id)).length > 0){
                 return  res.status(400).json({
@@ -88,11 +83,19 @@ exports.applyJob = async (req,res)=>{
                     message : "Failed to apply at current job as you have already applied to it before",
                 });
             }
+            const data =  {
+                userAssociated: req.user._id,
+                jobAssociated : req.body.jobAssociated,
+                whyHire : req.body.whyHire ,
+                candidateAvailability : req.body.candidateAvailability
+            }
             const {firstName , lastName , email } = req.user;
             data.userDetails = {firstName,lastName,email};
 
             const {jobTitle , jobDescription} = jobAssociated;
             data.jobDetails = {jobTitle , jobDescription};
+
+            await sendEmailAfterJobApply(jobAssociated.postedByDetails,req.user,jobTitle);
 
             const savedData = await userAnswerDatabase.create(data);
 
@@ -106,7 +109,7 @@ exports.applyJob = async (req,res)=>{
             });
         }catch (e) {
             console.log(e);
-            return res.status(400).json({
+            return res.status(500).json({
                 code : "JOB_APPLIED_FAILED",
                 appliedAtJob : false,
                 message : "Failed applied at current job",
