@@ -13,6 +13,7 @@ const customCouponDatabase = require("../models/customCoupon");
 const redisClient = new Redis(process.env.REDIS);
 const mongoose = require("mongoose");
 const otpTemplate = require("../utils/OtpEmail");
+const axios = require("axios");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -343,6 +344,7 @@ exports.userDetails = async (req,res)=>{
                 });
             }else{
                 const {firstName , lastName , email , phoneNumber , location } = user;
+                // const userCommunityDetails = await axios.get(`${}`)
                 const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
                 return res.status(200).json({
                     userFound : true ,
