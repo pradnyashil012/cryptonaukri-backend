@@ -36,7 +36,7 @@ margin: 0 auto;
 ">
   <h1 style="margin-top: 1rem; color: #4B5563; font-size: 1.25rem;line-height: 1.75rem; font-weight: 600; ">Application Update</h1><br/>
   
-  <p style="margin-top: 1rem; color: #374151; ">${firstName} ${lastName} has for ${jobDetail} at ${companyName}</p>
+  <p style="margin-top: 1rem; color: #374151; ">${firstName} ${lastName} has applied for ${jobDetail} at ${companyName}</p>
   
   <span style="color: #9CA3AF; 
 font-size: 0.75rem;
