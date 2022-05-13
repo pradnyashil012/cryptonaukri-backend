@@ -7,12 +7,12 @@ exports.sendEmailAfterJobApply = async ({officialEmail,companyName},{firstName ,
         port : process.env.EMAIL_PORT,
         secure : true ,
         auth : {
-            user : process.env.EMAIL,
-            pass: process.env.PASSWORD
+            user : process.env.UPDATE_EMAIL,
+            pass: process.env.UPDATE_EMAIL_PASSWORD
         }
     });
     const mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.UPDATE_EMAIL,
         to: officialEmail,
         subject: `A Candidate has applied to ${companyName}`,
         html: emailTemplate(firstName,lastName,jobTitle,companyName)
