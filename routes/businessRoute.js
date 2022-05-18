@@ -12,7 +12,7 @@ router.route("/signup")
     .post(businessSignup);
 router.route("/login")
     .post(businessLogin);
-router.route("/forgotPasswordOTP")
+router.route("/forgetPasswordOTP")
     .get(forgetPasswordOTP);
 router.route("/forgetPassword")
     .post(forgetPassword);
