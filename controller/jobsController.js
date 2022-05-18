@@ -123,3 +123,31 @@ exports.applyJob = async (req,res)=>{
         });
     }
 }
+
+exports.deleteJob = async (req,res)=>{
+    try{
+        const jobToDelete = await jobsDatabase.findById(req.params.jobID);
+        if(String(req.user._id)===String(jobToDelete.postedBy)){
+            await jobsDatabase.findByIdAndDelete(req.params.jobID);
+            await userAnswerDatabase.deleteMany({jobsAssociated : Object(req.params.jobID)});
+            return res.status(203).json({
+                code : "JOB_DELETED",
+                jobDeletion : true ,
+                message : "Job Successfully Deleted",
+                deletedData : jobToDelete
+            });
+        }else{
+            return res.status(403).json({
+                code : "NOT_ELIGIBLE",
+                jobDeletion : false,
+                message : "You are not eligible to apply at current job"
+            });
+        }
+    }catch (e) {
+        return res.status(500).json({
+            code : "JOB_DELETION_FAILED",
+            jobDeletion : false,
+            message : "Failed to delete current job",
+        })
+    }
+}
