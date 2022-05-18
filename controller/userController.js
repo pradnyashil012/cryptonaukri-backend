@@ -56,7 +56,7 @@ exports.sendOTP = async (req,res)=>{
             html: otpTemplate(otp,1)
         }
 
-        transporter.sendMail(mailOptions,(err,data)=>{
+        await transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
                 console.log(err);
                 return res.status(400).json({
@@ -263,7 +263,7 @@ exports.forgetPasswordOTP = async (req,res)=>{
             subject: 'OTP To Change Password for Cryptonaukri.com',
             html: otpTemplate(otp,0)
         }
-        transporter.sendMail(mailOptions,(err,data)=>{
+        await transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
                 return res.status(400).json({
                     code : "OTP_FAILED",
