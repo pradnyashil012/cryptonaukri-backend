@@ -303,7 +303,7 @@ exports.jobApprovalPart = async (req,res)=>{
             {hasBeenApproved : true} , {new : true});
         await adminLogDatabase.create({
             approvedBy : req.user._id,
-            extendedData : jobDataApproved._id ,
+            approvedData : jobDataApproved._id ,
             extendedOn : new Date(Date.now())
         });
 
@@ -327,7 +327,7 @@ exports.jobApprovalPart = async (req,res)=>{
                <h4>The Job(${jobDataApproved.jobTitle}) which you posted has been approved</h4>
             `
         }
-        transporter.sendMail(mailOptions,(err,data)=>{
+        await transporter.sendMail(mailOptions,(err,data)=>{
             if(err)
                 console.log(err);
         });
