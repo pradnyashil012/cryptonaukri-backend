@@ -2,6 +2,7 @@ const internshipDatabase = require("../models/business/internshipSchema");
 const internshipAnswerDatabase = require("../models/user/userAnswersInternship");
 const businessDatabase = require("../models/business/businessSchema");
 const {sendEmailAfterJobApply} = require("../utils/sendEmailFunctions");
+const jobsDatabase = require("../models/business/jobSchema");
 
 exports.postInternship = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -67,7 +68,7 @@ exports.applyInternship = async (req,res)=>{
         try{
             const data =  {
                 userAssociated: req.user._id,
-                internshipAssociated : req.body.jobAssociated,
+                internshipAssociated : req.body.internshipAssociated,
                 whyHire : req.body.whyHire ,
                 candidateAvailability : req.body.candidateAvailability
             }
@@ -111,5 +112,33 @@ exports.applyInternship = async (req,res)=>{
             appliedAtInternship : false,
             message : "You are not eligible to apply at current internship"
         });
+    }
+}
+
+exports.deleteInternship = async (req,res)=>{
+    try{
+        const internshipToDelete = await internshipDatabase.findById(req.params.internshipID);
+        if(String(req.user._id)===String(internshipToDelete.postedBy)){
+            await internshipDatabase.findByIdAndDelete(req.params.internshipID);
+            await internshipAnswerDatabase.deleteMany({internshipAssociated : Object(req.params.internshipID)});
+            return res.status(203).json({
+                code : "INTERNSHIP_DELETED",
+                internshipDeletion : true ,
+                message : "Internship Successfully Deleted",
+                deletedData : internshipToDelete
+            });
+        }else{
+            return res.status(403).json({
+                code : "NOT_ELIGIBLE",
+                internshipDeletion : false,
+                message : "You are not eligible to apply at current job"
+            });
+        }
+    }catch (e) {
+        return res.status(500).json({
+            code : "INTERNSHIP_DELETION_FAILED",
+            internshipDeletion : false,
+            message : "Failed to delete current Internship",
+        })
     }
 }
