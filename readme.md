@@ -41,13 +41,15 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - **/findJob** = To Find Job (different queries to be added)
 - **/applyJob** = To Apply for a job
 - **/findJob/:jobID** = To find a specific Job
+- **/deleteJob/:jobID** = To delete Job
 
 #### Internship [/api/v1/internship]
 - **/postInternship** = To Post an Internship
 - **/findInternship** = To Find Internship (different queries to be added)
 - **/applyInternship** = To Apply for an Internship
 - **/findInternship/:internshipID** = To find a specific Internship
-
+- **/deleteInternship/:internshipID** = To delete Internship
+- 
 #### Admin [/api/v1/admin]
 - /login = For Admin Login [POST]
 - /signup?key=adminKey = For admin signup (Pass User JWT) [POST]
