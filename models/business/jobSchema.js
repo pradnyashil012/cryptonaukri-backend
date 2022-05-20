@@ -54,6 +54,7 @@ const Schema = new mongoose.Schema({
         type: Number,
         require: true,
     },
+    currencyType : String,
     fixedPay: {
         type: Number,
         require: true,
