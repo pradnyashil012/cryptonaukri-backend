@@ -26,8 +26,6 @@ exports.sendEmailAfterUserSignup = async ({firstName,lastName,email})=>{
     });
 }
 
-
-
 const transporter = (authUser , authPassword) => {
     return nodemailer.createTransport({
         service: "smtp",
