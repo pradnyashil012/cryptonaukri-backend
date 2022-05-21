@@ -95,7 +95,7 @@ exports.applyJob = async (req,res)=>{
             const {jobTitle , jobDescription} = jobAssociated;
             data.jobDetails = {jobTitle , jobDescription};
 
-            await sendEmailAfterJobApply(jobAssociated.postedByDetails,req.user,jobTitle);
+            sendEmailAfterJobApply(jobAssociated.postedByDetails,req.user,jobTitle);
 
             const savedData = await userAnswerDatabase.create(data);
 
