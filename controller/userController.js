@@ -11,9 +11,8 @@ const userAnswersInternshipDatabase = require("../models/user/userAnswersInterns
 const customCouponDatabase = require("../models/customCoupon");
 // const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
 const redisClient = new Redis(process.env.REDIS);
-const mongoose = require("mongoose");
 const otpTemplate = require("../utils/OtpEmail");
-const axios = require("axios");
+const {sendEmailAfterUserSignup} = require("../utils/sendEmailFunctions");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -56,7 +55,7 @@ exports.sendOTP = async (req,res)=>{
             html: otpTemplate(otp,1)
         }
 
-        await transporter.sendMail(mailOptions,(err,data)=>{
+        transporter.sendMail(mailOptions,(err,data)=>{
             if(err){
                 console.log(err);
                 return res.status(400).json({
@@ -125,8 +124,7 @@ exports.userSignup = async (req,res)=>{
                 userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
                     await userDatabase.create(userDataToBeSaved);
-                    // const {_id , firstName , lastName , email , phoneNumber , location , isDisabled , ROLE } = user;
-                    // await communityDBUserDatabase.create({_id , firstName , lastName , email , location ,phoneNumber ,isDisabled ,ROLE});
+                    sendEmailAfterUserSignup(userDataToBeSaved);
                     return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
