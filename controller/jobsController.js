@@ -51,7 +51,7 @@ exports.findJobs = async (req,res)=>{
 exports.findJob = async (req,res)=>{
     try{
         const data = await jobsDatabase.findById(req.params.jobID);
-        console.log(data.postedBy);
+        // console.log(data.postedBy);
         if(data){
             data.postedBy = await businessDatabase.findById(data.postedBy);
             return res.status(200).json({
