@@ -79,7 +79,7 @@ const emailTemplateSignup = (firstName,lastName)=>{
       <br/> 
       <span style="color: #4B5563; 
   font-size: 0.75rem;
-  line-height: 1rem;">You can reach out to me at <span style="color: #EF4444;">ceo@cryptonaukri.com</span></span>
+  line-height: 1rem;">You can reach out to me at <span style="color: #EF4444;">founder@cryptonaukri.com</span></span>
     </p>
     <br/><br/>
     <span style="color: #9CA3AF; 
