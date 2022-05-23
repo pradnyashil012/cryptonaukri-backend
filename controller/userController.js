@@ -124,7 +124,7 @@ exports.userSignup = async (req,res)=>{
                 userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
                     await userDatabase.create(userDataToBeSaved);
-                    // sendEmailAfterUserSignup(userDataToBeSaved);
+                    sendEmailAfterUserSignup(userDataToBeSaved);
                     return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
