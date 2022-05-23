@@ -84,7 +84,7 @@ exports.sendOTP = async (req,res)=>{
 exports.userSignup = async (req,res)=>{
     redisClient.get(req.body.email)
         .then( async (data)=> {
-            if( Number(data) === req.body.otp){
+            if(Number(data) === req.body.otp){
                 if(req.query.coupon){
                     const couponData = await couponDatabase.findOne({ couponCode : req.query.coupon });
                     if(couponData.referredUserEmail.length < 3){
@@ -124,7 +124,7 @@ exports.userSignup = async (req,res)=>{
                 userDataToBeSaved.couponCode = await keyGenAndStoreFunc(req.body.email);
                 try{
                     await userDatabase.create(userDataToBeSaved);
-                    sendEmailAfterUserSignup(userDataToBeSaved);
+                    await sendEmailAfterUserSignup(userDataToBeSaved);
                     return res.status(201).json({
                         code : "USER_ADDED",
                         userAdded : true,
