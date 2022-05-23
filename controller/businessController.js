@@ -12,6 +12,7 @@ const jobAnswersDatabase = require("../models/user/userAnswersModel");
 const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
 const userDatabase = require("../models/user/userSchema");
 const otpTemplate = require("../utils/OtpEmail");
+const {sendEmailAfterBusinessSignup} = require("../utils/sendEmailFunctions");
 
 
 exports.sendOTP = async (req,res)=>{
@@ -99,6 +100,7 @@ exports.businessSignup = async (req,res)=>{
                        };
                        try{
                            await businessDatabase.create(businessDataToBeSaved);
+                           await sendEmailAfterBusinessSignup(businessDataToBeSaved);
                            const businessCoupon = await businessCouponDatabase.findOne({coupon : req.query.coupon});
                            businessCoupon.businessAssociated = req.body.officialEmail;
                            await businessCouponDatabase.findByIdAndUpdate(businessCoupon._id , businessCoupon);
