@@ -424,7 +424,6 @@ const approveTemplate = (executiveName , title)=>{
     return `<html>
   <head>
     <meta charset="UTF-8">
-    <script src="script.js"></script>
   </head>
   <body>
   <div style="padding: 2.5rem; 
