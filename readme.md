@@ -42,6 +42,7 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - **/applyJob** = To Apply for a job
 - **/findJob/:jobID** = To find a specific Job
 - **/deleteJob/:jobID** = To delete Job
+- **/applicationStatusChange?applicationID=?&status=?** = [POST] To Change status of a particular job application. Status = [ "SUBMITTED" , "REJECTED" , "UNDER_REVIEW" , "HIRED" ]
 
 #### Internship [/api/v1/internship]
 - **/postInternship** = To Post an Internship
@@ -49,7 +50,8 @@ Test Server Link : `https://cryptonaukribackendtest.herokuapp.com/`
 - **/applyInternship** = To Apply for an Internship
 - **/findInternship/:internshipID** = To find a specific Internship
 - **/deleteInternship/:internshipID** = To delete Internship
-- 
+- **/applicationStatusChange?applicationID=?&status=?** = [POST] To Change status of a particular Internship application. Status = [ "SUBMITTED" , "REJECTED" , "UNDER_REVIEW" , "HIRED" ]
+
 #### Admin [/api/v1/admin]
 - /login = For Admin Login [POST]
 - /signup?key=adminKey = For admin signup (Pass User JWT) [POST]
