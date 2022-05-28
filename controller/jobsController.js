@@ -1,7 +1,7 @@
 const jobsDatabase = require("../models/business/jobSchema");
 const userAnswerDatabase = require("../models/user/userAnswersModel");
 const businessDatabase = require("../models/business/businessSchema");
-const {sendEmailAfterJobApply} = require("../utils/sendEmailFunctions");
+const {sendEmailAfterJobApply, sendEmailAfterApplicationStatusChange} = require("../utils/sendEmailFunctions");
 
 exports.postJob = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -148,6 +148,55 @@ exports.deleteJob = async (req,res)=>{
             code : "JOB_DELETION_FAILED",
             jobDeletion : false,
             message : "Failed to delete current job",
-        })
+        });
+    }
+}
+//applicationID=?&status=? [ "SUBMITTED" , "REJECTED" , "UNDER_REVIEW" , "HIRED" ]
+exports.changeJobApplicationStatus = async (req,res)=>{
+    try{
+        const application = await userAnswerDatabase.findById(req.query.applicationID);
+        const jobToWhichApplicationBelongs = await jobsDatabase.findById(application.jobAssociated);
+        if(jobToWhichApplicationBelongs.postedBy !== req.user._id)
+            return res.status(403).json({
+                code : "NOT_ELIGIBLE",
+                appliedAtJob : false,
+                message : "You are not eligible to visit this endpoint"
+            });
+
+        if(application.applicationStatus=== "HIRED" || application.applicationStatus=== "REJECTED")
+            return res.status(400).json({
+                code : "STATUS_CHANGE_FAILED",
+                statusChange : false ,
+                message : `You have already ${application.applicationStatus} this candidate`
+            });
+
+        if(req.query.status==="UNDER_REVIEW" || req.query.status==="HIRED" ){
+            const updatedApplication = await userAnswerDatabase.findByIdAndUpdate(req.query.applicationID,{applicationStatus : req.query.status});
+            try{
+                sendEmailAfterApplicationStatusChange(application.userDetails,jobToWhichApplicationBelongs.postedByDetails.companyName,req.query.status);
+            }catch (e) {
+                console.log(e);
+                return res.status(200).json({
+                    code : "STATUS_CHANGED",
+                    statusChange : true ,
+                    message : "Status of the candidate changed" ,
+                    data : updatedApplication
+                });
+            }
+
+            return res.status(200).json({
+                code : "STATUS_CHANGED",
+                statusChange : true ,
+                message : "Status of the candidate changed" ,
+                data : updatedApplication
+            });
+        }
+
+    }catch (e) {
+        return res.status(500).json({
+           code : "STATUS_CHANGE_FAILED",
+           statusChange : false ,
+           message : "Failed to change the status of current application"
+        });
     }
 }
