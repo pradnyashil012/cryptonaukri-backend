@@ -30,7 +30,7 @@ app.use("/api/v1/admin",adminRoute);
 app.use("/api/v1/newsLetter",newsLetterRoute);
 
 database()
-    .then(()=>console.log("Connected To Database"))
+    .then(async ()=>console.log("Connected to database"))
     .catch(()=>console.log("Connection To Database Failed"));
 
 // database2()
