@@ -100,10 +100,19 @@ exports.businessSignup = async (req,res)=>{
                        };
                        try{
                            await businessDatabase.create(businessDataToBeSaved);
-                           await sendEmailAfterBusinessSignup(businessDataToBeSaved);
                            const businessCoupon = await businessCouponDatabase.findOne({coupon : req.query.coupon});
                            businessCoupon.businessAssociated = req.body.officialEmail;
                            await businessCouponDatabase.findByIdAndUpdate(businessCoupon._id , businessCoupon);
+                           try{
+                               sendEmailAfterBusinessSignup(businessDataToBeSaved);
+                           }catch (e) {
+                               console.log(e); // basically we don't want our user to think they have not got registered bcuz this function didn't run properly
+                               return res.status(201).json({
+                                   code : "BUSINESS_ADDED",
+                                   userAdded : true,
+                                   message : "Business has been added successfully"
+                               });
+                           }
                            return res.status(201).json({
                                code : "BUSINESS_ADDED",
                                userAdded : true,
@@ -421,6 +430,7 @@ exports.businessProfileUpdate = async (req,res)=>{
         });
     }
 }
+
 
 
 async function asyncForEach(array, callback) {
