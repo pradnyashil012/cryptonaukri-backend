@@ -30,6 +30,10 @@ const Schema = new mongoose.Schema({
         type : Boolean ,
         default : false
     },
+    applicationStatus : {
+      type : String,
+      default : "SUBMITTED"
+    },
     appliedOn : {
         type : Date ,
         default : Date.now()
