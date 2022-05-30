@@ -7,7 +7,6 @@ dotenv.config({
 const database = require("./configuration/databaseConfig");
 // const database2 = require("./configuration/secondDatabaseConfig");
 const cors = require("./middleware/cors");
-
 //Routes Import
 const userRoute = require("./routes/userRoute");
 const businessRoute = require("./routes/businessRoute");
@@ -30,7 +29,7 @@ app.use("/api/v1/admin",adminRoute);
 app.use("/api/v1/newsLetter",newsLetterRoute);
 
 database()
-    .then(async ()=>console.log("Connected to database"))
+    .then(()=>console.log("Connected to database"))
     .catch(()=>console.log("Connection To Database Failed"));
 
 // database2()
@@ -41,4 +40,10 @@ database()
 const PORT = process.env.PORT || 8000;
 app.listen(PORT , ()=> console.log(`CryptoNaukri Server Started At PORT ${PORT}`));
 
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
 
