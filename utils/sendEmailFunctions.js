@@ -1,5 +1,20 @@
 const nodemailer = require("nodemailer");
 
+exports.sendEmailToAdmin = async (typeOfApplication,companyName , idOfApplication)=>{
+    const transporterFunc = transporter(process.env.UPDATE_EMAIL,process.env.UPDATE_EMAIL_PASSWORD);
+    const mailOptions = {
+        from: process.env.UPDATE_EMAIL,
+        to: "pradnyashil012@gmail.com",
+        subject: `${typeOfApplication} has been posted by ${companyName}`,
+        html: `ID of that ${typeOfApplication} is ${idOfApplication}`
+    }
+    transporterFunc.sendMail(mailOptions,(err,data)=>{
+        if(err)
+            console.log(err);
+    });
+}
+
+
 exports.sendEmailAfterApplicationStatusChange = async ({firstName,lastName,email},companyName,status)=>{
     const transporterFunc = transporter(process.env.UPDATE_EMAIL,process.env.UPDATE_EMAIL_PASSWORD);
     const mailOptions = {
