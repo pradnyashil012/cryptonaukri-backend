@@ -128,11 +128,6 @@ exports.userSignup = async (req,res)=>{
                         sendEmailAfterUserSignup(userDataToBeSaved);
                     }catch (e) {
                         console.log(e); // basically we don't want our user to think they have not got registered bcuz this function didn't run properly
-                        return res.status(201).json({
-                            code : "USER_ADDED",
-                            userAdded : true,
-                            message : "user has been added successfully"
-                        });
                     }
                     return res.status(201).json({
                         code : "USER_ADDED",
