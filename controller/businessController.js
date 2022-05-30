@@ -107,11 +107,6 @@ exports.businessSignup = async (req,res)=>{
                                sendEmailAfterBusinessSignup(businessDataToBeSaved);
                            }catch (e) {
                                console.log(e); // basically we don't want our user to think they have not got registered bcuz this function didn't run properly
-                               return res.status(201).json({
-                                   code : "BUSINESS_ADDED",
-                                   userAdded : true,
-                                   message : "Business has been added successfully"
-                               });
                            }
                            return res.status(201).json({
                                code : "BUSINESS_ADDED",
