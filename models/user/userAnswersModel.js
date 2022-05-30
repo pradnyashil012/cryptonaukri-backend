@@ -8,7 +8,11 @@ const Schema = new mongoose.Schema({
     userDetails : {
         firstName : String,
         lastName : String,
-        email : String
+        email : String ,
+        resumeLink : {
+            type : String ,
+            default : null
+        }
     },
     jobAssociated : {
         type : mongoose.Schema.Types.ObjectId,
