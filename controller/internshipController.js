@@ -1,9 +1,9 @@
 const internshipDatabase = require("../models/business/internshipSchema");
 const internshipAnswerDatabase = require("../models/user/userAnswersInternship");
 const businessDatabase = require("../models/business/businessSchema");
-const {sendEmailAfterJobApply, sendEmailAfterApplicationStatusChange} = require("../utils/sendEmailFunctions");
-const jobsDatabase = require("../models/business/jobSchema");
+const {sendEmailAfterJobApply, sendEmailAfterApplicationStatusChange, sendEmailToAdmin} = require("../utils/sendEmailFunctions");
 const userAnswerDatabase = require("../models/user/userAnswersModel");
+const userResumeDatabase = require("../models/user/userResumeSchema");
 
 exports.postInternship = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -12,6 +12,11 @@ exports.postInternship = async (req,res)=>{
             req.body.postedBy = _id;
             req.body.postedByDetails = {executiveName,officialEmail,companyName,websiteLink};
             const data = await internshipDatabase.create(req.body);
+            try{
+                sendEmailToAdmin("Internship" , companyName , data._id);
+            }catch (e) {
+                console.log(e);
+            }
             return res.status(201).json({
                 code : "INTERNSHIP_ADDED",
                 isInternshipAdded : true ,
@@ -81,19 +86,29 @@ exports.applyInternship = async (req,res)=>{
                     message : "Failed to apply at current internship as you have already applied to it before",
                 });
             }
+            const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+            let resumeLink = null;
+
+            if(userResume)
+                resumeLink = userResume.links.otherLinks[0];
 
             const {firstName , lastName , email } = req.user;
-            data.userDetails = {firstName,lastName,email};
+            data.userDetails = {firstName,lastName,email , resumeLink};
 
             const {internshipTitle , responsibilities } = internshipAssociated;
             data.internshipDetails = {internshipTitle,responsibilities};
 
-            await sendEmailAfterJobApply(internshipAssociated.postedByDetails,req.user,internshipTitle);
+            try{
+                sendEmailAfterJobApply(internshipAssociated.postedByDetails,req.user,internshipTitle);
+            }catch (e) {
+                console.log(e);
+            }
 
             const savedData = await internshipAnswerDatabase.create(data);
             internshipAssociated.usersApplied.push(savedData);
             const updatedInternshipAssociated = await internshipDatabase.findByIdAndUpdate(internshipAssociated._id , internshipAssociated , {new : true});
-            return res.status(200).json({
+
+            return res.status(201).json({
                 code : "INTERNSHIP_APPLIED",
                 appliedAtInternship : true,
                 message : "applied at current internship",
