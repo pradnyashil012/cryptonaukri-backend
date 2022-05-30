@@ -13,7 +13,7 @@ exports.postInternship = async (req,res)=>{
             req.body.postedByDetails = {executiveName,officialEmail,companyName,websiteLink};
             const data = await internshipDatabase.create(req.body);
             try{
-                sendEmailToAdmin("Internship" , companyName , data._id);
+                sendEmailToAdmin("internship" , companyName , data._id);
             }catch (e) {
                 console.log(e);
             }
