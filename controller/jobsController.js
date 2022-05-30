@@ -176,12 +176,6 @@ exports.changeJobApplicationStatus = async (req,res)=>{
                 sendEmailAfterApplicationStatusChange(application.userDetails,jobToWhichApplicationBelongs.postedByDetails.companyName,req.query.status);
             }catch (e) {
                 console.log(e);
-                return res.status(200).json({
-                    code : "STATUS_CHANGED",
-                    statusChange : true ,
-                    message : "Status of the candidate changed" ,
-                    data : updatedApplication
-                });
             }
 
             return res.status(200).json({
