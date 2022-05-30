@@ -1,7 +1,8 @@
 const jobsDatabase = require("../models/business/jobSchema");
 const userAnswerDatabase = require("../models/user/userAnswersModel");
 const businessDatabase = require("../models/business/businessSchema");
-const {sendEmailAfterJobApply, sendEmailAfterApplicationStatusChange} = require("../utils/sendEmailFunctions");
+const userResumeDatabase = require("../models/user/userResumeSchema");
+const {sendEmailAfterJobApply, sendEmailAfterApplicationStatusChange, sendEmailToAdmin} = require("../utils/sendEmailFunctions");
 
 exports.postJob = async (req,res)=>{
     if(req.user.ROLE === "BUSINESS"){
@@ -10,6 +11,13 @@ exports.postJob = async (req,res)=>{
             req.body.postedBy = _id;
             req.body.postedByDetails = {executiveName,officialEmail,companyName,websiteLink};
             const data = await jobsDatabase.create(req.body);
+
+            try{
+                sendEmailToAdmin("Job" , companyName , data._id);
+            }catch (e) {
+                console.log(e);
+            }
+
             return res.status(201).json({
                 code : "JOB_ADDED",
                 isJobAdded : true ,
@@ -89,19 +97,31 @@ exports.applyJob = async (req,res)=>{
                 whyHire : req.body.whyHire ,
                 candidateAvailability : req.body.candidateAvailability
             }
+
+            const userResume = await userResumeDatabase.findOne({userAssociated : req.user._id});
+            let resumeLink = null;
+
+            if(userResume)
+                resumeLink = userResume.links.otherLinks[0];
+
+
             const {firstName , lastName , email } = req.user;
-            data.userDetails = {firstName,lastName,email};
+            data.userDetails = {firstName,lastName,email,resumeLink};
 
             const {jobTitle , jobDescription} = jobAssociated;
             data.jobDetails = {jobTitle , jobDescription};
 
-            sendEmailAfterJobApply(jobAssociated.postedByDetails,req.user,jobTitle);
+            try{
+                sendEmailAfterJobApply(jobAssociated.postedByDetails,req.user,jobTitle);
+            }catch (e) {
+                console.log(e);
+            }
 
             const savedData = await userAnswerDatabase.create(data);
 
             jobAssociated.usersApplied.push(savedData);
             const updatedJobAssociated = await jobsDatabase.findByIdAndUpdate(jobAssociated._id , jobAssociated , {new : true});
-            return res.status(200).json({
+            return res.status(201).json({
                 code : "JOB_APPLIED",
                 appliedAtJob : true,
                 message : "applied at current job",
