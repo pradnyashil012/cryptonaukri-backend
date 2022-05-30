@@ -6,7 +6,7 @@ exports.sendEmailToAdmin = async (typeOfApplication,companyName , idOfApplicatio
         from: process.env.UPDATE_EMAIL,
         to: "pradnyashil012@gmail.com",
         subject: `${typeOfApplication} has been posted by ${companyName}`,
-        html: `ID of that ${typeOfApplication} is ${idOfApplication}`
+        html: `ID of that ${typeOfApplication} is ${idOfApplication} and can be approved at /${typeOfApplication}ToApprove/${idOfApplication}`
     }
     transporterFunc.sendMail(mailOptions,(err,data)=>{
         if(err)
