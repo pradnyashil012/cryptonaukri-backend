@@ -142,6 +142,7 @@ exports.userSignup = async (req,res)=>{
                         userAdded : false,
                         message : "Email ID already exists"
                     });
+
                 }
             }else{
                 return res.status(400).json({
