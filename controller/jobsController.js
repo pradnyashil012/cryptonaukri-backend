@@ -13,7 +13,7 @@ exports.postJob = async (req,res)=>{
             const data = await jobsDatabase.create(req.body);
 
             try{
-                sendEmailToAdmin("Job" , companyName , data._id);
+                sendEmailToAdmin("job" , companyName , data._id);
             }catch (e) {
                 console.log(e);
             }
