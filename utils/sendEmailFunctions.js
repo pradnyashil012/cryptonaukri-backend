@@ -44,17 +44,21 @@ exports.sendEmailAfterJobApply = async ({officialEmail,companyName},{firstName ,
     });
 }
 exports.sendEmailAfterUserSignup = async ({firstName,lastName,email})=>{
-    const transporterFunc = transporter(process.env.FOUNDER_EMAIL,process.env.FOUNDER_EMAIL_PASSWORD);
-    const mailOptions = {
-        from: process.env.FOUNDER_EMAIL,
-        to: email,
-        subject: `Welcome To Cryptonaukri ${firstName} ${lastName}`,
-        html: emailTemplateSignup(firstName,lastName)
-    }
-    transporterFunc.sendMail(mailOptions,(err,data)=>{
-        if(err)
-            console.log(err);
-    });
+   try{
+       const transporterFunc = transporter(process.env.FOUNDER_EMAIL,process.env.FOUNDER_EMAIL_PASSWORD);
+       const mailOptions = {
+           from: process.env.FOUNDER_EMAIL,
+           to: email,
+           subject: `Welcome To Cryptonaukri ${firstName} ${lastName}`,
+           html: emailTemplateSignup(firstName,lastName)
+       }
+       transporterFunc.sendMail(mailOptions,(err,data)=>{
+           if(err)
+               console.log(err);
+       });
+   }catch (e) {
+       console.log(e);
+   }
 }
 exports.sendEmailAfterBusinessSignup = async ({executiveName,officialEmail})=>{
     const transporterFunc = transporter(process.env.FOUNDER_EMAIL,process.env.FOUNDER_EMAIL_PASSWORD);
