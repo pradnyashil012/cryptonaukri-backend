@@ -43,7 +43,7 @@ exports.postJob = async (req,res)=>{
 
 exports.findJobs = async (req,res)=>{
     try{
-        const data = await jobsDatabase.find({isDisabled : false,hasBeenApproved : true});
+        const data = await jobsDatabase.find({isDisabled : false,hasBeenApproved : true},{usersApplied : 0 , postedBy : 0});
         return res.status(200).json({
             code : "JOBS_FOUND",
             data
@@ -60,11 +60,13 @@ exports.findJob = async (req,res)=>{
     try{
         const data = await jobsDatabase.findById(req.params.jobID);
         // console.log(data.postedBy);
+        const numberOfApplicants = data.usersApplied.length;
+        data.usersApplied = undefined;
+
         if(data){
-            data.postedBy = await businessDatabase.findById(data.postedBy);
             return res.status(200).json({
                 code : "JOB_FOUND",
-                details : data
+                details : {...data._doc,numberOfApplicants}
             });
         }else{
             return res.status(404).json({
@@ -73,6 +75,7 @@ exports.findJob = async (req,res)=>{
             });
         }
     }catch (e){
+        console.log(e);
         return res.status(400).json({
             code : "WRONG_ID_FORMAT",
             message : "JOB ID format is wrong"
