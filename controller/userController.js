@@ -9,7 +9,6 @@ const userAnswersDatabase = require("../models/user/userAnswersModel");
 const userResumeDatabase = require("../models/user/userResumeSchema");
 const userAnswersInternshipDatabase = require("../models/user/userAnswersInternship");
 const customCouponDatabase = require("../models/customCoupon");
-// const communityDBUserDatabase = require("../models/user/userSchemaForCommunity");
 const redisClient = new Redis(process.env.REDIS);
 const otpTemplate = require("../utils/OtpEmail");
 const {sendEmailAfterUserSignup} = require("../utils/sendEmailFunctions");
@@ -109,8 +108,14 @@ exports.userSignup = async (req,res)=>{
                 if(req.query.bonusCoupon){
                     const customCouponData = await customCouponDatabase.findOne({finalCoupon : req.query.bonusCoupon});
                     if(customCouponData){
-                        await customCouponDatabase.findByIdAndUpdate(customCouponData._id , {isBeingUsed : true});
-                        userDataToBeSaved.accountDisableDate = Date.now() + ( customCouponData.numberOfDays * 24 * 60 * 60 * 1000 );
+                        if(customCouponData.usersAssociated.length < customCouponData.numberOfUsers){
+                            await customCouponDatabase.findByIdAndUpdate(customCouponData._id , {
+                                $push:{
+                                    usersAssociated : req.body.email
+                                }
+                            });
+                            userDataToBeSaved.accountDisableDate = Date.now() + ( customCouponData.numberOfDays * 24 * 60 * 60 * 1000 );
+                        }
                     }
                 }
                 /*
