@@ -372,6 +372,7 @@ exports.loggedInBusinessDetails = async (req,res)=> {
     if(req.user.ROLE === "BUSINESS"){
         try {
             const jobsAdded = await jobsDatabase.find({postedBy: req.user._id, hasBeenApproved : true});
+
             const {executiveName , officialEmail , companyName , description , establishedYear
                 , headquarters , websiteLink , password , GSTIN} = req.user;
             const internshipsAdded = await internshipDatabase.find({postedBy : req.user._id , hasBeenApproved : true});
