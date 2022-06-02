@@ -18,10 +18,13 @@ const Schema = new mongoose.Schema({
       type : Number ,
       required : true
    },
-   isBeingUsed : {
-      type : Boolean ,
-      default : false
-   }
+    numberOfUsers : {
+      type : Number ,
+      required : true
+    },
+   usersAssociated : [{
+       type : String
+   }]
 });
 
 module.exports = mongoose.model("customCoupons",Schema);
