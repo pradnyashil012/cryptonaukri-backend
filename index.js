@@ -15,6 +15,8 @@ const internshipRoute = require("./routes/internshipRoute");
 const adminRoute = require("./routes/adminRoute");
 const newsLetterRoute = require("./routes/newsLetterRoute");
 
+const user = require("./models/user/userSchema");
+
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -39,11 +41,4 @@ database()
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT , ()=> console.log(`CryptoNaukri Server Started At PORT ${PORT}`));
-
-
-async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
-    }
-}
 
