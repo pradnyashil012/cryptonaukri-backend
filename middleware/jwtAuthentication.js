@@ -54,27 +54,27 @@ exports.verifyJWT = async (req,res,next)=>{
 
                 req.user.isDisabled = true;
                 await businessDatabase.findByIdAndUpdate(req.user._id , req.user);
-                const jobs = await jobsDatabase.find({postedBy : req.user._id});
-                 await asyncForEach(jobs , async (val)=>{
-                     val.isDisabled = true;
-                     const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
-                     userAnswers.forEach(data =>{
-                        data.isDisabled = true;
-                     });
-                     await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
-                });
-                await jobsDatabase.updateMany({postedBy : req.user._id},jobs);
-                const internships = await internshipDatabase.find({postedBy : req.user._id});
-
-                await asyncForEach(internships , async (val)=>{
-                    val.isDisabled = true;
-                    const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
-                    userAnswers.forEach(data =>{
-                        data.isDisabled = true;
-                    });
-                    await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
-                });
-                await internshipDatabase.updateMany({postedBy : req.user._id} , internships);
+                // const jobs = await jobsDatabase.find({postedBy : req.user._id});
+                //  await asyncForEach(jobs , async (val)=>{
+                //      val.isDisabled = true;
+                //      const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
+                //      userAnswers.forEach(data =>{
+                //         data.isDisabled = true;
+                //      });
+                //      await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+                // });
+                // await jobsDatabase.updateMany({postedBy : req.user._id},jobs);
+                // const internships = await internshipDatabase.find({postedBy : req.user._id});
+                //
+                // await asyncForEach(internships , async (val)=>{
+                //     val.isDisabled = true;
+                //     const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
+                //     userAnswers.forEach(data =>{
+                //         data.isDisabled = true;
+                //     });
+                //     await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+                // });
+                // await internshipDatabase.updateMany({postedBy : req.user._id} , internships);
 
                 return res.status(400).json({
                     code : "INVALID",
