@@ -351,13 +351,13 @@ exports.userDetails = async (req,res)=>{
                     message : "User account has been disabled"
                 });
             }else{
-                const {firstName , lastName , email , phoneNumber , location } = user;
+                const {firstName , lastName , email , phoneNumber , location , _id } = user;
                 // const userCommunityDetails = await axios.get(`${}`)
                 const userResume = await userResumeDatabase.findOne({userAssociated : user._id});
                 return res.status(200).json({
                     userFound : true ,
                     details : {
-                        firstName, lastName, email , phoneNumber , location , userResume
+                        firstName, lastName, email , phoneNumber , location , userResume , _id
                     }
                 });
             }
