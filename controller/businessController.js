@@ -173,26 +173,26 @@ exports.businessLogin = async (req,res)=>{
     if(business.accountDisableDate < Date.now() && !business.isDisabled){
         business.isDisabled = true;
         await businessDatabase.findByIdAndUpdate(business._id , business);
-        const jobs = await jobsDatabase.find({postedBy : business._id});
-        await asyncForEach(jobs , async (val)=>{
-            val.isDisabled = true;
-            const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
-            userAnswers.forEach(data =>{
-                data.isDisabled = true;
-            });
-            await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
-        });
-        await jobsDatabase.updateMany({postedBy : business._id},jobs);
-        const internships = await internshipDatabase.find({postedBy : business._id});
-        await asyncForEach(internships , async (val)=>{
-            val.isDisabled = true;
-            const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
-            userAnswers.forEach(data =>{
-                data.isDisabled = true;
-            });
-            await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
-        });
-        await internshipDatabase.updateMany({postedBy : business._id} , internships);
+        // const jobs = await jobsDatabase.find({postedBy : business._id});
+        // await asyncForEach(jobs , async (val)=>{
+        //     val.isDisabled = true;
+        //     const userAnswers = await jobAnswersDatabase.find({jobAssociated : val._id});
+        //     userAnswers.forEach(data =>{
+        //         data.isDisabled = true;
+        //     });
+        //     await jobAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+        // });
+        // await jobsDatabase.updateMany({postedBy : business._id},jobs);
+        // const internships = await internshipDatabase.find({postedBy : business._id});
+        // await asyncForEach(internships , async (val)=>{
+        //     val.isDisabled = true;
+        //     const userAnswers = await internshipAnswersDatabase.find({jobAssociated : val._id});
+        //     userAnswers.forEach(data =>{
+        //         data.isDisabled = true;
+        //     });
+        //     await internshipAnswersDatabase.updateMany({jobAssociated : val._id},userAnswers);
+        // });
+        // await internshipDatabase.updateMany({postedBy : business._id} , internships);
 
         return res.status(400).json({
             code : "INVALID",
@@ -350,20 +350,52 @@ exports.forgetPassword = async (req,res)=>{
         });
 }
 exports.businessDetails = async (req,res)=>{
-    const business = await businessDatabase.findOne({officialEmail : req.query.email});
-    if(business){
-        const jobsAdded = await jobsDatabase.find({postedBy: business._id});
-        const {executiveName , officialEmail , companyName , description , establishedYear
-            , headquarters , websiteLink } = business;
-        return res.status(200).json({
-            userFound : true ,
-            details : {executiveName,officialEmail,companyName,description,establishedYear,headquarters,websiteLink , jobsAdded }
-        });
-    }else{
-        return res.status(400).json({
+    try{
+        const business = await businessDatabase.findOne({officialEmail : req.query.email});
+        if(business){
+            const jobsAdded = await jobsDatabase.find({postedBy: business._id});
+            const {executiveName , officialEmail , companyName , description , establishedYear
+                , headquarters , websiteLink } = business;
+            return res.status(200).json({
+                userFound : true ,
+                details : {executiveName,officialEmail,companyName,description,establishedYear,headquarters,websiteLink , jobsAdded }
+            });
+        }else{
+            return res.status(400).json({
+                userFound : false ,
+                details : null ,
+                message : "No business is associated with this email ID"
+            });
+        }   
+    }catch (e) {
+        return res.status(500).json({
             userFound : false ,
             details : null ,
-            message : "No business is associated with this email ID"
+            message : "An Error occurred while finding the business data"
+        });
+    }
+}
+exports.businessDetailsByID = async (req,res)=>{
+    try {
+        const business = await businessDatabase.findById(req.query.businessID);
+        if(business){
+            const {executiveName , officialEmail , _id, websiteLink } = business;
+            return res.status(200).json({
+                userFound : true ,
+                details : {executiveName,officialEmail,websiteLink,_id}
+            });
+        }else{
+            return res.status(400).json({
+                userFound : false ,
+                details : null ,
+                message : "No business is associated with this email ID"
+            });
+        }
+    }catch (e) {
+        return res.status(500).json({
+            userFound : false ,
+            details : null ,
+            message : "An Error occurred while finding the business data"
         });
     }
 }
