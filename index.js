@@ -15,8 +15,6 @@ const internshipRoute = require("./routes/internshipRoute");
 const adminRoute = require("./routes/adminRoute");
 const newsLetterRoute = require("./routes/newsLetterRoute");
 
-const user = require("./models/user/userSchema");
-
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
