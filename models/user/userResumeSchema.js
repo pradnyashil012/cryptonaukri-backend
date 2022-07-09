@@ -56,6 +56,7 @@ const schema = new mongoose.Schema({
     links : {
         github : String ,
         linkedin : String ,
+        twitter: String,
         otherLinks : [{
             type : String
         }]
