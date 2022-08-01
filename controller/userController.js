@@ -18,17 +18,17 @@ exports.sendOTP = async (req, res) => {
     email: req.query.email,
   });
   if (!userPresenceCheck) {
-    // const transporter = nodemailer.createTransport({
-    //   service: "smtp",
-    //   host: process.env.EMAIL_HOST,
-    //   name: process.env.EMAIL_NAME,
-    //   port: process.env.EMAIL_PORT,
-    //   secure: true,
-    //   auth: {
-    //     user: process.env.EMAIL,
-    //     pass: process.env.PASSWORD,
-    //   },
-    // });
+    const transporter = nodemailer.createTransport({
+      service: "smtp",
+      host: process.env.EMAIL_HOST,
+      name: process.env.EMAIL_NAME,
+      port: process.env.EMAIL_PORT,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
     let otp = 0;
     await redisClient
       .get(req.query.email)
@@ -55,23 +55,22 @@ exports.sendOTP = async (req, res) => {
       subject: "Email verification for Cryptonaukri.com",
       html: otpTemplate(otp, 1),
     };
-    console.log(otp);
-    // transporter.sendMail(mailOptions, (err, data) => {
-    //   if (err) {
-    //     console.log(err);
-    //     return res.status(400).json({
-    //       code: "OTP_FAILED",
-    //       otpSent: false,
-    //       message: "Failed To send OTP",
-    //     });
-    // } else {
-    return res.status(200).json({
-      code: "OTP_SENT",
-      otpSent: true,
-      message: "OTP sent",
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({
+          code: "OTP_FAILED",
+          otpSent: false,
+          message: "Failed To send OTP",
+        });
+      } else {
+        return res.status(200).json({
+          code: "OTP_SENT",
+          otpSent: true,
+          message: "OTP sent",
+        });
+      }
     });
-    // }
-    // });
   } else {
     return res.status(400).json({
       code: "DUPLICATE",
