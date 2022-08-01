@@ -8,7 +8,7 @@ const redisClient = new Redis(process.env.REDIS);
 const jobsDatabase = require("../models/business/jobSchema");
 const internshipDatabase = require("../models/business/internshipSchema");
 const daoCouponDatabase = require("../models/dao/daoCouponModel");
-const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
+const couponGeneration = require("../utils/couponKeyGenerationForDao");
 const userDatabase = require("../models/user/userSchema");
 const otpTemplate = require("../utils/OtpEmail");
 const { sendEmailAfterDaoSignup } = require("../utils/sendEmailFunctions");
@@ -18,17 +18,17 @@ exports.sendOTP = async (req, res) => {
     officialEmail: req.query.email,
   });
   if (!daoPresenceCheck) {
-    const transporter = nodemailer.createTransport({
-      service: "smtp",
-      host: process.env.EMAIL_HOST,
-      name: process.env.EMAIL_NAME,
-      port: process.env.EMAIL_PORT,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+    // const transporter = nodemailer.createTransport({
+    //   service: "smtp",
+    //   host: process.env.EMAIL_HOST,
+    //   name: process.env.EMAIL_NAME,
+    //   port: process.env.EMAIL_PORT,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.EMAIL,
+    //     pass: process.env.PASSWORD,
+    //   },
+    // });
     let otp = 0;
     await redisClient
       .get(`DAO_${req.query.email}`)
@@ -54,21 +54,22 @@ exports.sendOTP = async (req, res) => {
       subject: "DAO Email verification for Cryptonaukri.com",
       html: otpTemplate(otp, 1),
     };
-    await transporter.sendMail(mailOptions, (err, data) => {
-      if (err) {
-        return res.status(400).json({
-          code: "OTP_FAILED",
-          otpSent: false,
-          message: "Failed To send OTP",
-        });
-      } else {
-        return res.status(200).json({
-          code: "OTP_SENT",
-          otpSent: true,
-          message: "OTP sent",
-        });
-      }
-    });
+    console.log(otp)
+    // await transporter.sendMail(mailOptions, (err, data) => {
+    //   if (err) {
+    //     return res.status(400).json({
+    //       code: "OTP_FAILED",
+    //       otpSent: false,
+    //       message: "Failed To send OTP",
+    //     });
+    //   } else {
+    //     return res.status(200).json({
+    //       code: "OTP_SENT",
+    //       otpSent: true,
+    //       message: "OTP sent",
+    //     });
+    //   }
+    // });
   } else {
     return res.status(400).json({
       code: "DUPLICATE",
@@ -116,7 +117,7 @@ exports.daoSignup = async (req, res) => {
               return res.status(201).json({
                 code: "DAO_ADDED",
                 userAdded: true,
-                message: "Business has been added successfully",
+                message: "DAO has been added successfully",
               });
             } catch (error) {
               // Need to make this error more specific.
@@ -210,7 +211,7 @@ exports.daoLogin = async (req, res) => {
       message: "Account has been disabled(free trial period expired)",
     });
   }
-  if (business.isDisabled) {
+  if (dao.isDisabled) {
     return res.status(400).json({
       code: "INVALID",
       message: "Account has been disabled(free trial period expired)",
@@ -275,17 +276,17 @@ exports.forgetPasswordOTP = async (req, res) => {
     officialEmail: req.query.email,
   });
   if (dao) {
-    const transporter = nodemailer.createTransport({
-      service: "smtp",
-      host: process.env.EMAIL_HOST,
-      name: process.env.EMAIL_NAME,
-      port: process.env.EMAIL_PORT,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+    // const transporter = nodemailer.createTransport({
+    //   service: "smtp",
+    //   host: process.env.EMAIL_HOST,
+    //   name: process.env.EMAIL_NAME,
+    //   port: process.env.EMAIL_PORT,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.EMAIL,
+    //     pass: process.env.PASSWORD,
+    //   },
+    // });
     let otp = 0;
     await redisClient
       .get(`DAO_${req.query.email}`)
@@ -310,21 +311,22 @@ exports.forgetPasswordOTP = async (req, res) => {
       subject: "OTP To Change Password for Cryptonaukri.com",
       html: otpTemplate(otp, 0),
     };
-    await transporter.sendMail(mailOptions, (err, data) => {
-      if (err) {
-        return res.status(400).json({
-          code: "OTP_FAILED",
-          otpSent: false,
-          message: "Failed To send OTP",
-        });
-      } else {
-        return res.status(200).json({
-          code: "OTP_SENT",
-          otpSent: true,
-          message: "OTP sent",
-        });
-      }
-    });
+    console.log(otp);
+    // await transporter.sendMail(mailOptions, (err, data) => {
+    //   if (err) {
+    //     return res.status(400).json({
+    //       code: "OTP_FAILED",
+    //       otpSent: false,
+    //       message: "Failed To send OTP",
+    //     });
+    //   } else {
+    //     return res.status(200).json({
+    //       code: "OTP_SENT",
+    //       otpSent: true,
+    //       message: "OTP sent",
+    //     });
+    //   }
+    // });
   } else {
     return res.status(404).json({
       userLoggedIn: false,
@@ -427,6 +429,23 @@ exports.daoProfileUpdate = async (req, res) => {
       message: "Dao Profile update failed",
       code: "PROFILE_UPDATE_FAILED",
       isProfileUpdated: false,
+    });
+  }
+};
+
+exports.ownerOTPGeneration = async (req, res) => {
+  if (
+    req.body.username === process.env.OWNER_USERNAME &&
+    req.body.password === process.env.OWNER_PASSWORD
+  ) {
+    const couponCode = await couponGeneration();
+    return res.status(201).json({
+      couponCode,
+      message: "Coupon Code generated",
+    });
+  } else {
+    return res.status(403).json({
+      message: "Sorry You are not authorized to access this endpoint",
     });
   }
 };

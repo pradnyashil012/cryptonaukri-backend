@@ -15,6 +15,7 @@ const internshipRoute = require("./routes/internshipRoute");
 const daoRoute = require("./routes/daoRoute");
 const adminRoute = require("./routes/adminRoute");
 const newsLetterRoute = require("./routes/newsLetterRoute");
+const verifyRoute = require("./routes/verifyRoute");
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -29,10 +30,14 @@ app.use("/api/v1/internship", internshipRoute);
 app.use("/api/v1/dao", daoRoute);
 app.use("/api/v1/admin", adminRoute);
 app.use("/api/v1/newsLetter", newsLetterRoute);
+app.use("/api/v1/verify", verifyRoute);
 
 database()
   .then(() => console.log("Connected to database"))
-  .catch(() => console.log("Connection To Database Failed"));
+  .catch((e) => {
+    console.log(e);
+    console.log("Connection To Database Failed");
+  });
 
 // database2()
 //     .then(()=>console.log("Connected To Second Database"))

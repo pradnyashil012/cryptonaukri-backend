@@ -11,6 +11,7 @@ const {
   forgetPasswordOTP,
   forgetPassword,
   changePassword,
+  ownerOTPGeneration,
 } = require("../controller/daoController");
 
 router.route("/otp").get(sendOTP);
@@ -21,6 +22,7 @@ router.route("/forgetPassword").post(forgetPassword);
 router.route("/daoDetailsID").get(daoDetailsByID);
 router.route("/updateDaoProfile").put([verifyJWT, daoOnly], daoProfileUpdate);
 router.route("/changePassword").post(verifyJWT, changePassword);
+router.route("/owner").post(ownerOTPGeneration);
 
 //Test Route
 router.route("/test").get(verifyJWT, async (req, res) => {

@@ -38,4 +38,10 @@ const Schema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("business", Schema);
+Schema.methods.toJSON = function () {
+  var obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
+
+module.exports = mongoose.model("dao", Schema);

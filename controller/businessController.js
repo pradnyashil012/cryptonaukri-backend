@@ -469,7 +469,6 @@ exports.loggedInBusinessDetails = async (req, res) => {
         establishedYear,
         headquarters,
         websiteLink,
-        password,
         GSTIN,
       } = req.user;
       const internshipsAdded = await internshipDatabase.find({
@@ -485,7 +484,6 @@ exports.loggedInBusinessDetails = async (req, res) => {
         establishedYear,
         headquarters,
         websiteLink,
-        password,
         GSTIN,
         jobsAdded,
         internshipsAdded,
@@ -511,11 +509,13 @@ exports.getInternshipDetails = async (req, res) => {
     const { id } = req.query;
 
     let business = await internshipDatabase.findOne({
+      _id: id,
       postedBy: req.user._id,
     });
 
     if (!business) {
       business = await jobsDatabase.findOne({
+        _id: id,
         postedBy: req.user._id,
       });
     }
@@ -523,8 +523,8 @@ exports.getInternshipDetails = async (req, res) => {
     if (!business) {
       return res.status(404).json({
         message: "Internship not found",
-        code: "INTERNSHIP_FOUND",
-        isInternshipFound: true,
+        code: "INTERNSHIP_NOT_FOUND",
+        isInternshipFound: false,
       });
     }
 
