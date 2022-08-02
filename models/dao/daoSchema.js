@@ -1,18 +1,21 @@
 const mongoose = require("mongoose");
 
 const Schema = new mongoose.Schema({
-  firstName: {
+  daoName: {
     type: String,
     require: true,
   },
-  lastName: {
+  websiteLink: {
+    type: String,
+  },
+  representativeName: {
     type: String,
     require: true,
   },
   officialEmail: {
     type: String,
-    require: true,
     unique: true,
+    require: true,
   },
   password: {
     type: String,
@@ -21,17 +24,17 @@ const Schema = new mongoose.Schema({
   phoneNumber: {
     type: String,
   },
-  location: {
-    type: String,
-    require: true,
-  },
-  dateOfJoining: {
-    type: Date,
-    default: Date.now(),
-  },
   ROLE: {
     type: String,
-    default: "ADMIN",
+    default: "DAO",
+  },
+  isDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  accountDisableDate: {
+    type: Date,
+    default: Date.now() + 28 * 24 * 60 * 60 * 1000,
   },
 });
 
@@ -41,4 +44,4 @@ Schema.methods.toJSON = function () {
   return obj;
 };
 
-module.exports = mongoose.model("admin", Schema);
+module.exports = mongoose.model("dao", Schema);

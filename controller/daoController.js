@@ -1,4 +1,5 @@
 const businessDatabase = require("../models/business/businessSchema");
+const daoDatabase = require("../models/dao/daoSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -6,39 +7,37 @@ const Redis = require("ioredis");
 const redisClient = new Redis(process.env.REDIS);
 const jobsDatabase = require("../models/business/jobSchema");
 const internshipDatabase = require("../models/business/internshipSchema");
-const businessCouponDatabase = require("../models/businessCouponModel");
-const couponGeneration = require("../utils/couponKeyGenerationForBusiness");
-const jobAnswersDatabase = require("../models/user/userAnswersModel");
-const internshipAnswersDatabase = require("../models/user/userAnswersInternship");
+const daoCouponDatabase = require("../models/dao/daoCouponModel");
+const couponGeneration = require("../utils/couponKeyGenerationForDao");
 const userDatabase = require("../models/user/userSchema");
 const otpTemplate = require("../utils/OtpEmail");
-const { sendEmailAfterBusinessSignup } = require("../utils/sendEmailFunctions");
+const { sendEmailAfterDaoSignup } = require("../utils/sendEmailFunctions");
 
 exports.sendOTP = async (req, res) => {
-  const businessPresenceCheck = await businessDatabase.findOne({
+  const daoPresenceCheck = await daoDatabase.findOne({
     officialEmail: req.query.email,
   });
-  if (!businessPresenceCheck) {
-    const transporter = nodemailer.createTransport({
-      service: "smtp",
-      host: process.env.EMAIL_HOST,
-      name: process.env.EMAIL_NAME,
-      port: process.env.EMAIL_PORT,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+  if (!daoPresenceCheck) {
+    // const transporter = nodemailer.createTransport({
+    //   service: "smtp",
+    //   host: process.env.EMAIL_HOST,
+    //   name: process.env.EMAIL_NAME,
+    //   port: process.env.EMAIL_PORT,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.EMAIL,
+    //     pass: process.env.PASSWORD,
+    //   },
+    // });
     let otp = 0;
     await redisClient
-      .get(`BUSINESS_${req.query.email}`)
+      .get(`DAO_${req.query.email}`)
       .then(async (data) => {
         if (data) {
           otp = Number(data);
         } else {
           otp = Math.floor(1000 + Math.random() * 9000);
-          await redisClient.set(`BUSINESS_${req.query.email}`, otp, "EX", 600);
+          await redisClient.set(`DAO_${req.query.email}`, otp, "EX", 600);
         }
       })
       .catch(async (error) => {
@@ -52,24 +51,25 @@ exports.sendOTP = async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL,
       to: req.query.email,
-      subject: "Business Email verification for Cryptonaukri.com",
+      subject: "DAO Email verification for Cryptonaukri.com",
       html: otpTemplate(otp, 1),
     };
-    await transporter.sendMail(mailOptions, (err, data) => {
-      if (err) {
-        return res.status(400).json({
-          code: "OTP_FAILED",
-          otpSent: false,
-          message: "Failed To send OTP",
-        });
-      } else {
-        return res.status(200).json({
-          code: "OTP_SENT",
-          otpSent: true,
-          message: "OTP sent",
-        });
-      }
-    });
+    console.log(otp)
+    // await transporter.sendMail(mailOptions, (err, data) => {
+    //   if (err) {
+    //     return res.status(400).json({
+    //       code: "OTP_FAILED",
+    //       otpSent: false,
+    //       message: "Failed To send OTP",
+    //     });
+    //   } else {
+    //     return res.status(200).json({
+    //       code: "OTP_SENT",
+    //       otpSent: true,
+    //       message: "OTP sent",
+    //     });
+    //   }
+    // });
   } else {
     return res.status(400).json({
       code: "DUPLICATE",
@@ -79,49 +79,45 @@ exports.sendOTP = async (req, res) => {
   }
 };
 
-exports.businessSignup = async (req, res) => {
-  const businessCoupon = await businessCouponDatabase.findOne({
+exports.daoSignup = async (req, res) => {
+  const daoCoupon = await daoCouponDatabase.findOne({
     coupon: req.query.coupon,
   });
-  if (businessCoupon) {
-    if (!businessCoupon.businessAssociated) {
+  if (daoCoupon) {
+    if (!daoCoupon.daoAssociated) {
       redisClient
-        .get(`BUSINESS_${req.body.officialEmail}`)
+        .get(`DAO_${req.body.officialEmail}`)
         .then(async (data) => {
           if (Number(data) === req.body.otp) {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(req.body.password, salt);
-            const businessDataToBeSaved = {
-              executiveName: req.body.executiveName,
+            const daoDataToBeSaved = {
+              daoName: req.body.daoName,
+              websiteLink: req.body.websiteLink,
+              representativeName: req.body.representativeName,
               officialEmail: req.body.officialEmail,
               password: hashedPassword,
-              companyName: req.body.companyName,
-              description: req.body.description,
-              establishedYear: req.body.establishedYear,
-              GSTIN: req.body.GSTIN,
-              headquarters: req.body.headquarters,
               phoneNumber: req.body.phoneNumber,
-              websiteLink: req.body.websiteLink,
             };
             try {
-              await businessDatabase.create(businessDataToBeSaved);
-              const businessCoupon = await businessCouponDatabase.findOne({
+              await daoDatabase.create(daoDataToBeSaved);
+              const daoCoupon = await daoCouponDatabase.findOne({
                 coupon: req.query.coupon,
               });
-              businessCoupon.businessAssociated = req.body.officialEmail;
-              await businessCouponDatabase.findByIdAndUpdate(
-                businessCoupon._id,
-                businessCoupon
+              daoCoupon.daoAssociated = req.body.officialEmail;
+              await daoCouponDatabase.findByIdAndUpdate(
+                daoCoupon._id,
+                daoCoupon
               );
               try {
-                sendEmailAfterBusinessSignup(businessDataToBeSaved);
+                sendEmailAfterDaoSignup(daoDataToBeSaved);
               } catch (e) {
                 console.log(e); // basically we don't want our user to think they have not got registered bcuz this function didn't run properly
               }
               return res.status(201).json({
-                code: "BUSINESS_ADDED",
+                code: "DAO_ADDED",
                 userAdded: true,
-                message: "Business has been added successfully",
+                message: "DAO has been added successfully",
               });
             } catch (error) {
               // Need to make this error more specific.
@@ -164,31 +160,31 @@ exports.businessSignup = async (req, res) => {
   }
 };
 
-exports.businessLogin = async (req, res) => {
-  const business = await businessDatabase.findOne({
+exports.daoLogin = async (req, res) => {
+  const dao = await daoDatabase.findOne({
     officialEmail: req.body.email,
   });
-  if (!business) {
+  if (!dao) {
     return res.status(404).json({
       userLoggedIn: false,
       code: "NOT_FOUND",
-      message: "Business with such email does not exist",
+      message: "Dao with such email does not exist",
     });
   }
   const validatePassword = await bcrypt.compare(
     req.body.password,
-    business.password
+    dao.password
   );
   if (!validatePassword) {
     return res.status(400).json({
       userLoggedIn: false,
       code: "WRONG_PASSWORD",
-      message: "business's entered password was wrong",
+      message: "Dao's entered password was wrong",
     });
   }
-  if (business.accountDisableDate < Date.now() && !business.isDisabled) {
-    business.isDisabled = true;
-    await businessDatabase.findByIdAndUpdate(business._id, business);
+  if (dao.accountDisableDate < Date.now() && !dao.isDisabled) {
+    dao.isDisabled = true;
+    await daoDatabase.findByIdAndUpdate(dao._id, dao);
     // const jobs = await jobsDatabase.find({postedBy : business._id});
     // await asyncForEach(jobs , async (val)=>{
     //     val.isDisabled = true;
@@ -215,7 +211,7 @@ exports.businessLogin = async (req, res) => {
       message: "Account has been disabled(free trial period expired)",
     });
   }
-  if (business.isDisabled) {
+  if (dao.isDisabled) {
     return res.status(400).json({
       code: "INVALID",
       message: "Account has been disabled(free trial period expired)",
@@ -224,8 +220,8 @@ exports.businessLogin = async (req, res) => {
 
   const token = await jwt.sign(
     {
-      businessID: business._id,
-      ROLE: "BUSINESS",
+      daoID: dao._id,
+      ROLE: "DAO",
     },
     process.env.JWT_KEY,
     {
@@ -240,7 +236,7 @@ exports.businessLogin = async (req, res) => {
     .json({
       userLoggedIn: true,
       code: "LOGGED_IN",
-      message: "Business Logged In Successfully",
+      message: "Dao Logged In Successfully",
     });
 };
 
@@ -260,7 +256,7 @@ exports.changePassword = async (req, res) => {
   req.user.password = await bcrypt.hash(req.body.newPassword, salt);
 
   try {
-    await businessDatabase.findByIdAndUpdate(req.user._id, req.user);
+    await daoDatabase.findByIdAndUpdate(req.user._id, req.user);
     return res.status(200).json({
       changedPassword: true,
       code: "CHANGED_PASSWORD",
@@ -276,37 +272,37 @@ exports.changePassword = async (req, res) => {
 };
 
 exports.forgetPasswordOTP = async (req, res) => {
-  const business = await businessDatabase.findOne({
+  const dao = await daoDatabase.findOne({
     officialEmail: req.query.email,
   });
-  if (business) {
-    const transporter = nodemailer.createTransport({
-      service: "smtp",
-      host: process.env.EMAIL_HOST,
-      name: process.env.EMAIL_NAME,
-      port: process.env.EMAIL_PORT,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+  if (dao) {
+    // const transporter = nodemailer.createTransport({
+    //   service: "smtp",
+    //   host: process.env.EMAIL_HOST,
+    //   name: process.env.EMAIL_NAME,
+    //   port: process.env.EMAIL_PORT,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.EMAIL,
+    //     pass: process.env.PASSWORD,
+    //   },
+    // });
     let otp = 0;
     await redisClient
-      .get(`BUSINESS_${req.query.email}`)
+      .get(`DAO_${req.query.email}`)
       .then(async (data) => {
         if (data) {
           otp = Number(data);
         } else {
           otp = Math.floor(1000 + Math.random() * 9000);
-          await redisClient.set(`BUSINESS_${req.query.email}`, otp, "EX", 600);
+          await redisClient.set(`DAO_${req.query.email}`, otp, "EX", 600);
         }
       })
       .catch(async (error) => {
         // need to return some data from here  for now Just logging the error
         console.log(error);
         otp = Math.floor(1000 + Math.random() * 9000);
-        await redisClient.set(`BUSINESS_${req.query.email}`, otp, "EX", 600);
+        await redisClient.set(`DAO_${req.query.email}`, otp, "EX", 600);
       });
 
     const mailOptions = {
@@ -315,21 +311,22 @@ exports.forgetPasswordOTP = async (req, res) => {
       subject: "OTP To Change Password for Cryptonaukri.com",
       html: otpTemplate(otp, 0),
     };
-    await transporter.sendMail(mailOptions, (err, data) => {
-      if (err) {
-        return res.status(400).json({
-          code: "OTP_FAILED",
-          otpSent: false,
-          message: "Failed To send OTP",
-        });
-      } else {
-        return res.status(200).json({
-          code: "OTP_SENT",
-          otpSent: true,
-          message: "OTP sent",
-        });
-      }
-    });
+    console.log(otp);
+    // await transporter.sendMail(mailOptions, (err, data) => {
+    //   if (err) {
+    //     return res.status(400).json({
+    //       code: "OTP_FAILED",
+    //       otpSent: false,
+    //       message: "Failed To send OTP",
+    //     });
+    //   } else {
+    //     return res.status(200).json({
+    //       code: "OTP_SENT",
+    //       otpSent: true,
+    //       message: "OTP sent",
+    //     });
+    //   }
+    // });
   } else {
     return res.status(404).json({
       userLoggedIn: false,
@@ -341,19 +338,16 @@ exports.forgetPasswordOTP = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
   redisClient
-    .get(`BUSINESS_${req.body.email}`)
+    .get(`DAO_${req.body.email}`)
     .then(async (data) => {
       if (Number(data) === req.body.otp) {
-        const user = await businessDatabase.findOne({
+        const user = await daoDatabase.findOne({
           officialEmail: req.body.email,
         });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(req.body.newPassword, salt);
         try {
-          await businessDatabase.updateOne(
-            { officialEmail: req.body.email },
-            user
-          );
+          await daoDatabase.updateOne({ officialEmail: req.body.email }, user);
           return res.status(200).json({
             changedPassword: true,
             code: "CHANGED_PASSWORD",
@@ -384,40 +378,28 @@ exports.forgetPassword = async (req, res) => {
       });
     });
 };
-exports.businessDetails = async (req, res) => {
+
+exports.daoDetailsByID = async (req, res) => {
   try {
-    const business = await businessDatabase.findOne({
-      officialEmail: req.query.email,
-    });
-    if (business) {
-      const jobsAdded = await jobsDatabase.find({ postedBy: business._id });
-      const {
-        executiveName,
-        officialEmail,
-        companyName,
-        description,
-        establishedYear,
-        headquarters,
-        websiteLink,
-      } = business;
+    const dao = await daoDatabase.findById(req.query.daoID);
+    if (dao) {
+      const { representativeName, daoName, officialEmail, _id, websiteLink } =
+        dao;
       return res.status(200).json({
         userFound: true,
         details: {
-          executiveName,
+          representativeName,
+          daoName,
           officialEmail,
-          companyName,
-          description,
-          establishedYear,
-          headquarters,
           websiteLink,
-          jobsAdded,
+          _id,
         },
       });
     } else {
       return res.status(400).json({
         userFound: false,
         details: null,
-        message: "No business is associated with this email ID",
+        message: "No dao is associated with this email ID",
       });
     }
   } catch (e) {
@@ -428,122 +410,25 @@ exports.businessDetails = async (req, res) => {
     });
   }
 };
-exports.businessDetailsByID = async (req, res) => {
+
+exports.daoProfileUpdate = async (req, res) => {
   try {
-    const business = await businessDatabase.findById(req.query.businessID);
-    if (business) {
-      const { executiveName, officialEmail, _id, websiteLink } = business;
-      return res.status(200).json({
-        userFound: true,
-        details: { executiveName, officialEmail, websiteLink, _id },
-      });
-    } else {
-      return res.status(400).json({
-        userFound: false,
-        details: null,
-        message: "No business is associated with this email ID",
-      });
-    }
-  } catch (e) {
-    return res.status(500).json({
-      userFound: false,
-      details: null,
-      message: "An Error occurred while finding the business data",
-    });
-  }
-};
-
-exports.loggedInBusinessDetails = async (req, res) => {
-  if (req.user.ROLE === "BUSINESS") {
-    try {
-      const jobsAdded = await jobsDatabase.find({
-        postedBy: req.user._id,
-        hasBeenApproved: true,
-      });
-
-      const {
-        executiveName,
-        officialEmail,
-        companyName,
-        description,
-        establishedYear,
-        headquarters,
-        websiteLink,
-        GSTIN,
-      } = req.user;
-      const internshipsAdded = await internshipDatabase.find({
-        postedBy: req.user._id,
-        hasBeenApproved: true,
-      });
-
-      return res.status(200).json({
-        executiveName,
-        officialEmail,
-        companyName,
-        description,
-        establishedYear,
-        headquarters,
-        websiteLink,
-        GSTIN,
-        jobsAdded,
-        internshipsAdded,
-      });
-    } catch (e) {
-      console.log(e);
-      return res.status(400).json({
-        code: "ERROR",
-        message: "some error occurred while fetching the data",
-      });
-    }
-  } else {
-    return res.status(403).json({
-      code: "NOT_ELIGIBLE",
-      appliedAtJob: false,
-      message: "You are not eligible to apply at current job",
-    });
-  }
-};
-
-exports.getInternshipDetails = async (req, res) => {
-  if (req.user.ROLE === "BUSINESS") {
-    const { id } = req.query;
-
-    let business = await internshipDatabase.findOne({
-      _id: id,
-      postedBy: req.user._id,
-    });
-
-    if (!business) {
-      business = await jobsDatabase.findOne({
-        _id: id,
-        postedBy: req.user._id,
-      });
-    }
-
-    if (!business) {
-      return res.status(404).json({
-        message: "Internship not found",
-        code: "INTERNSHIP_NOT_FOUND",
-        isInternshipFound: false,
-      });
-    }
-
-    let details = await internshipAnswersDatabase.findAll({
-      internshipAssociated: id,
-    });
-
-    if (details.length == 0) {
-      details = await jobAnswersDatabase.findAll({ jobAssociated: id });
-    }
+    const updatedDaoProfile = await daoDatabase.findByIdAndUpdate(
+      req.user._id,
+      req.body,
+      { new: true }
+    );
     return res.status(200).json({
-      message: "Internship found",
-      code: "INTERNSHIP_FOUND",
-      isInternshipFound: true,
-      data: details,
+      message: "Dao Profile updated",
+      code: "DAO_PROFILE_UPDATED",
+      isProfileUpdated: true,
+      data: updatedDaoProfile,
     });
-  } else {
-    return res.status(403).json({
-      message: "Sorry You are not authorized to access this endpoint",
+  } catch (e) {
+    return res.status(400).json({
+      message: "Dao Profile update failed",
+      code: "PROFILE_UPDATE_FAILED",
+      isProfileUpdated: false,
     });
   }
 };
@@ -564,31 +449,3 @@ exports.ownerOTPGeneration = async (req, res) => {
     });
   }
 };
-
-exports.businessProfileUpdate = async (req, res) => {
-  try {
-    const updatedBusinessProfile = await businessDatabase.findByIdAndUpdate(
-      req.user._id,
-      req.body,
-      { new: true }
-    );
-    return res.status(200).json({
-      message: "Business Profile updated",
-      code: "BUSINESS_PROFILE_UPDATED",
-      isProfileUpdated: true,
-      data: updatedBusinessProfile,
-    });
-  } catch (e) {
-    return res.status(400).json({
-      message: "Business Profile update failed",
-      code: "PROFILE_UPDATE_FAILED",
-      isProfileUpdated: false,
-    });
-  }
-};
-
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}

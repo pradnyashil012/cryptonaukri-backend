@@ -1,95 +1,147 @@
 const nodemailer = require("nodemailer");
 
-exports.sendEmailToAdmin = async (typeOfApplication,companyName , idOfApplication)=>{
-    const transporterFunc = transporter(process.env.UPDATE_EMAIL,process.env.UPDATE_EMAIL_PASSWORD);
-    const mailOptions = {
-        from: process.env.UPDATE_EMAIL,
-        to: "pradnyashil012@gmail.com",
-        subject: `${typeOfApplication} has been posted by ${companyName}`,
-        html: `ID of that ${typeOfApplication} is ${idOfApplication} and can be approved at /${typeOfApplication}ToApprove/${idOfApplication}`
-    }
-    transporterFunc.sendMail(mailOptions,(err,data)=>{
-        if(err)
-            console.log(err);
-    });
-}
-
-
-exports.sendEmailAfterApplicationStatusChange = async ({firstName,lastName,email},companyName,status)=>{
-    const transporterFunc = transporter(process.env.UPDATE_EMAIL,process.env.UPDATE_EMAIL_PASSWORD);
-    const mailOptions = {
-        from: process.env.UPDATE_EMAIL,
-        to: email,
-        subject: `Application status at ${companyName}`,
-        html: emailTemplateApplicationStatus(companyName,status,firstName,lastName)
-    }
-    transporterFunc.sendMail(mailOptions,(err,data)=>{
-        if(err)
-            console.log(err);
-    });
-}
-
-
-exports.sendEmailAfterJobApply = async ({officialEmail,companyName},{firstName , lastName},jobTitle)=>{
-    const transporterFunc = transporter(process.env.UPDATE_EMAIL,process.env.UPDATE_EMAIL_PASSWORD);
-    const mailOptions = {
-        from: process.env.UPDATE_EMAIL,
-        to: officialEmail,
-        subject: `A Candidate has applied to ${companyName}`,
-        html: emailTemplateJobApply(firstName,lastName,jobTitle,companyName)
-    }
-    transporterFunc.sendMail(mailOptions,(err,data)=>{
-        if(err)
-            console.log(err);
-    });
-}
-exports.sendEmailAfterUserSignup = async ({firstName,lastName,email})=>{
-   try{
-       const transporterFunc = transporter(process.env.FOUNDER_EMAIL,process.env.FOUNDER_EMAIL_PASSWORD);
-       const mailOptions = {
-           from: process.env.FOUNDER_EMAIL,
-           to: email,
-           subject: `Welcome To Cryptonaukri ${firstName} ${lastName}`,
-           html: emailTemplateSignup(firstName,lastName)
-       }
-       transporterFunc.sendMail(mailOptions,(err,data)=>{
-           if(err)
-               console.log(err);
-       });
-   }catch (e) {
-       console.log(e);
-   }
-}
-exports.sendEmailAfterBusinessSignup = async ({executiveName,officialEmail})=>{
-    const transporterFunc = transporter(process.env.FOUNDER_EMAIL,process.env.FOUNDER_EMAIL_PASSWORD);
-    const mailOptions = {
-        from: process.env.FOUNDER_EMAIL,
-        to: officialEmail,
-        subject: `Welcome To Cryptonaukri ${executiveName}`,
-        html: emailTemplateSignup(executiveName,"")
-    }
-    transporterFunc.sendMail(mailOptions,(err,data)=>{
-        if(err)
-            console.log(err);
-    });
-}
-
-const transporter = (authUser , authPassword) => {
-    return nodemailer.createTransport({
-        service: "smtp",
-        host: process.env.EMAIL_HOST,
-        name: process.env.EMAIL_NAME,
-        port: process.env.EMAIL_PORT,
-        secure: true,
-        auth: {
-            user: authUser,
-            pass: authPassword
-        }
-    });
+exports.sendEmailToAdmin = async (
+  typeOfApplication,
+  companyName,
+  idOfApplication
+) => {
+  const transporterFunc = transporter(
+    process.env.UPDATE_EMAIL,
+    process.env.UPDATE_EMAIL_PASSWORD
+  );
+  const mailOptions = {
+    from: process.env.UPDATE_EMAIL,
+    to: "pradnyashil012@gmail.com",
+    subject: `${typeOfApplication} has been posted by ${companyName}`,
+    html: `ID of that ${typeOfApplication} is ${idOfApplication} and can be approved at /${typeOfApplication}ToApprove/${idOfApplication}`,
+  };
+  transporterFunc.sendMail(mailOptions, (err, data) => {
+    if (err) console.log(err);
+  });
 };
 
-const emailTemplateApplicationStatus = (companyName , status , firstName , lastName)=>{
-    return `<html>
+exports.sendEmailAfterApplicationStatusChange = async (
+  { firstName, lastName, email },
+  companyName,
+  status
+) => {
+  const transporterFunc = transporter(
+    process.env.UPDATE_EMAIL,
+    process.env.UPDATE_EMAIL_PASSWORD
+  );
+  const mailOptions = {
+    from: process.env.UPDATE_EMAIL,
+    to: email,
+    subject: `Application status at ${companyName}`,
+    html: emailTemplateApplicationStatus(
+      companyName,
+      status,
+      firstName,
+      lastName
+    ),
+  };
+  transporterFunc.sendMail(mailOptions, (err, data) => {
+    if (err) console.log(err);
+  });
+};
+
+exports.sendEmailAfterJobApply = async (
+  { officialEmail, companyName },
+  { firstName, lastName },
+  jobTitle
+) => {
+  const transporterFunc = transporter(
+    process.env.UPDATE_EMAIL,
+    process.env.UPDATE_EMAIL_PASSWORD
+  );
+  const mailOptions = {
+    from: process.env.UPDATE_EMAIL,
+    to: officialEmail,
+    subject: `A Candidate has applied to ${companyName}`,
+    html: emailTemplateJobApply(firstName, lastName, jobTitle, companyName),
+  };
+  transporterFunc.sendMail(mailOptions, (err, data) => {
+    if (err) console.log(err);
+  });
+};
+exports.sendEmailAfterUserSignup = async ({ firstName, lastName, email }) => {
+  try {
+    const transporterFunc = transporter(
+      process.env.FOUNDER_EMAIL,
+      process.env.FOUNDER_EMAIL_PASSWORD
+    );
+    const mailOptions = {
+      from: process.env.FOUNDER_EMAIL,
+      to: email,
+      subject: `Welcome To Cryptonaukri ${firstName} ${lastName}`,
+      html: emailTemplateSignup(firstName, lastName),
+    };
+    transporterFunc.sendMail(mailOptions, (err, data) => {
+      if (err) console.log(err);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+exports.sendEmailAfterBusinessSignup = async ({
+  executiveName,
+  officialEmail,
+}) => {
+  const transporterFunc = transporter(
+    process.env.FOUNDER_EMAIL,
+    process.env.FOUNDER_EMAIL_PASSWORD
+  );
+  const mailOptions = {
+    from: process.env.FOUNDER_EMAIL,
+    to: officialEmail,
+    subject: `Welcome To Cryptonaukri ${executiveName}`,
+    html: emailTemplateSignup(executiveName, ""),
+  };
+  transporterFunc.sendMail(mailOptions, (err, data) => {
+    if (err) console.log(err);
+  });
+};
+
+exports.sendEmailAfterDaoSignup = async ({
+  representativeName,
+  officialEmail,
+}) => {
+  const transporterFunc = transporter(
+    process.env.FOUNDER_EMAIL,
+    process.env.FOUNDER_EMAIL_PASSWORD
+  );
+  const mailOptions = {
+    from: process.env.FOUNDER_EMAIL,
+    to: officialEmail,
+    subject: `Welcome To Cryptonaukri ${representativeName}`,
+    html: emailTemplateSignup(representativeName, ""),
+  };
+  transporterFunc.sendMail(mailOptions, (err, data) => {
+    if (err) console.log(err);
+  });
+};
+
+const transporter = (authUser, authPassword) => {
+  return nodemailer.createTransport({
+    service: "smtp",
+    host: process.env.EMAIL_HOST,
+    name: process.env.EMAIL_NAME,
+    port: process.env.EMAIL_PORT,
+    secure: true,
+    auth: {
+      user: authUser,
+      pass: authPassword,
+    },
+  });
+};
+
+const emailTemplateApplicationStatus = (
+  companyName,
+  status,
+  firstName,
+  lastName
+) => {
+  return `<html>
   <head>
     <meta charset="UTF-8">
     <script src="script.js"></script>
@@ -140,11 +192,10 @@ const emailTemplateApplicationStatus = (companyName , status , firstName , lastN
   </div>
   </body>
 </html>`;
-}
+};
 
-
-const emailTemplateSignup = (firstName,lastName)=>{
-    return `<html>
+const emailTemplateSignup = (firstName, lastName) => {
+  return `<html>
   <head>
     <meta charset="UTF-8">
     <script src="script.js"></script>
@@ -198,9 +249,9 @@ const emailTemplateSignup = (firstName,lastName)=>{
   </div>
   </body>
 </html>`;
-}
+};
 
-const emailTemplateJobApply = (firstName , lastName , jobDetail , companyName) => {
+const emailTemplateJobApply = (firstName, lastName, jobDetail, companyName) => {
   return `<html>
   <head>
     <meta charset="UTF-8">
@@ -248,7 +299,5 @@ const emailTemplateJobApply = (firstName , lastName , jobDetail , companyName) =
     </div>
   </div>
   </body>
-</html>`
+</html>`;
 };
-
-
