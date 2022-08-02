@@ -208,13 +208,13 @@ exports.userLogin = async (req, res) => {
       message: "user's entered password was wrong",
     });
   }
-  if (user.accountDisableDate < Date.now() && !user.isDisabled) {
-    return res.status(400).json({
-      code: "INVALID",
-      userLoggedIn: false,
-      message: "Account has been disabled(free trial period expired)",
-    });
-  }
+  // if (user.accountDisableDate < Date.now() && !user.isDisabled) {
+  //   return res.status(400).json({
+  //     code: "INVALID",
+  //     userLoggedIn: false,
+  //     message: "Account has been disabled(free trial period expired)",
+  //   });
+  // }
   const token = await jwt.sign(
     {
       userID: user._id,
