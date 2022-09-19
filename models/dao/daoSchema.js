@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const Schema = new mongoose.Schema({
+const Schema = new Schema({
   daoName: {
     type: String,
     require: true,
@@ -44,4 +44,4 @@ Schema.methods.toJSON = function () {
   return obj;
 };
 
-module.exports = mongoose.model("dao", Schema);
+module.exports = model("dao", Schema);
