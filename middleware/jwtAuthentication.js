@@ -6,7 +6,6 @@ const daoDatabase = require("../models/dao/daoSchema");
 
 exports.verifyJWT = async (req, res, next) => {
   const token = req.header("Authorization");
-  console.log(token);
   if (!token) {
     return res.status(400).json({
       code: "JWT_NOT_FOUND",
