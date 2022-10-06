@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const Schema = new Schema({
+const daoSchema = new Schema({
   daoName: {
     type: String,
     require: true,
@@ -38,10 +38,10 @@ const Schema = new Schema({
   },
 });
 
-Schema.methods.toJSON = function () {
+daoSchema.methods.toJSON = function () {
   var obj = this.toObject();
   delete obj.password;
   return obj;
 };
 
-module.exports = model("dao", Schema);
+module.exports = model("dao", daoSchema);
